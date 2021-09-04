@@ -1,0 +1,38 @@
+{
+  "name": "Fintech-server",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "init": "npm install",
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "crypto": "*",
+    "csvjson": "^5.1.0",
+    "date-and-time": "^0.6.2",
+    "date-diff": "^0.2.0",
+    "datetime-converter-nodejs": "^0.1.3",
+    "del": "^3.0.0",
+    "express": "^4.16.3",
+    "fs": "0.0.1-security",
+    "html-pdf": "^2.2.0",
+    "html2pdf.js": "^0.9.1",
+    "intel": "^1.2.0",
+    "js-sha512": "^0.8.0",
+    "jsonwebtoken": "^8.3.0",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.21",
+    "mongoose": "^5.2.17",
+    "mongoose-timestamp": "^0.6.0",
+    "mv": "*",
+    "nodemailer": "^4.6.7",
+    "path": "^0.12.7",
+    "randomatic": "^3.1.1",
+    "randomstring": "^1.1.5",
+    "serve-favicon": "^2.5.0"
+  }
+}
