@@ -9,7 +9,7 @@ var config = {};
 /////////////////////////////////////////////////////////////////////
 
 config.dev = {
-	db : 'mongodb://localhost:27017/fintech-dev',
+	db : 'mongodb+srv://admin:admin@cluster0.pvsbm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
 	host : "http://localhost",
     node_port : 8870,
 	mailer : {

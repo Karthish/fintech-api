@@ -20,6 +20,7 @@ app.use(cors({ origin: "http://localhost:4200" }));
 // });
 
 const secureRoutes = express.Router();
+const routerTest = express.Router();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 var timestamps = require("mongoose-timestamp");
@@ -35,12 +36,18 @@ const port = config.node_port;
 mongoose.Promise = global.Promise;
 
 app.use(favicon(__dirname + "/fav.ico"));
-app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
-app.use(bodyParser.json({ limit: "50mb" }));
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true
+}));
 app.use(express.static("./"));
 app.use(secureRoutes);
+var tmproutes = require("./router")
 var routes = require("./router")(app);
 mongoose.set("useFindAndModify", true);
+//const db = "mongodb+srv://admin:admin@cluster0.pvsbm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+//const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
 mongoose
   .connect(`${config.db}`, {
     useNewUrlParser: true,
@@ -68,6 +75,12 @@ mongoose
     }
   );
 var connection = mongoose.connection;
+
+
+//app.use('/api',req)
+const tmproute = require('./testRouter');
+app.use('/api', tmproute);
+
 app.listen(port, function () {
   console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
   console.log(

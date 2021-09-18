@@ -8,6 +8,10 @@ var randomize = require('randomatic');
 
 var userMaster = {};
 
+userMaster.testFunction = function(req,res) {
+    res.send('working fine');
+}
+
 userMaster.login = function(req,res) {
 	var user = req.body;
 	var output = {};

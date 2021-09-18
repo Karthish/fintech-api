@@ -10,7 +10,14 @@ var request = require('request');
 var user = require('./controllers/userCtrl.js');
 
 var customer = require('./controllers/customerCtrl');
+var loan  = require('./controllers/loanCtrl');
+const express = require('express');
+const router = express.Router();
 
+router.get('/health-check', (req, res) =>
+  res.send('OK')
+);
+module.exports = router;
 var rootMaster ={};
 
 rootMaster.secureRoutes = function (req,res,next) {
@@ -41,10 +48,14 @@ rootMaster.secureRoutes = function (req,res,next) {
 module.exports = rootMaster;
 
 module.exports = function(app) {
-    
-        app.get('/api/v1/test', function(req, res){
+     console.log('main app',app)
+        app.get('/v1/test', function(req, res){
           console.log('welocme to Fintech WEB APPLICATION')
         });
+
+        //Loans API
+        app.post('/api/v1/loan/create', loan.addNewLoan);
+        app.get('/api/v1/loan/list', loan.findLoans);
 
         app.post('/api/v1/user/create', user.createUser);
 
