@@ -19,7 +19,7 @@ config.dev = {
 };
 
 config.test = {
-	db : 'mongodb://52.66.163.16:3366/cable-pay-qa',
+	db : 'mongodb+srv://admin:admin@cluster0.pvsbm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
 	host : "http://52.66.163.16",
 	node_port : 8871, 
 	mailer : {

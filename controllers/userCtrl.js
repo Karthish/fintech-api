@@ -5,11 +5,169 @@ var common = require('../common/common.js');
 var jwt = require('jsonwebtoken');
 var random = require('randomstring');
 var randomize = require('randomatic');
-
+var request = require('request');
 var userMaster = {};
 
 userMaster.testFunction = function(req,res) {
+
     res.send('working fine');
+}
+
+userMaster.panVerification = function(req,res) {
+    console.log('enter here', "	https://testapi.karza.in/v2/pan");
+    var data = JSON.stringify({pan:'AMBPN4511G',consent: "Y"});
+
+    console.log('+++++++++++++++++++++++++ PAN request obj ++++++++++++++++++++++++++++++')
+    console.log(data);
+
+
+    let panUrl = 'https://testapi.karza.in/v2/pan'
+    request.post({url:panUrl, headers: {
+        'Content-Type': 'application/json',
+        'x-karza-key': 'FQdEGtWHuHV4GebM'
+      }, body: data}, function(err,httpResponse,body){ 
+        console.error('error:', err);
+        //console.error('httpResponse:', httpResponse);
+        console.error('body:', body);
+        res.send(body);
+
+       })
+
+}
+
+userMaster.aadharVerification = function(req, res) {
+    let currentTime = new Date().getTime().toString().substr(0,10);
+    let caseId = randomize('0',6);
+    console.log('caseId:',caseId, 'currentTime:', currentTime);
+    //req.body.name = "Kartheeswaran M" ;
+    //req.body.aadhaarNo = "681130340262";
+    //req.body.loan_type = 'HomeLoan';
+    //req.body.loan_description = 'home loan needs';
+    //req.body.loan_ref_id = "61439897e09de82c2cd628a7";
+    //req.body.current_page = 'aadhar verification';
+
+    console.log("req Obj", req.body);
+
+    var options = { method: 'POST',
+    url: 'https://testapi.karza.in/v3/aadhaar-consent',
+    headers: { 'content-type': 'application/json', 'x-karza-key': 'FQdEGtWHuHV4GebM' },
+    body:
+     {"ipAddress":"12.12.12.12",
+    "userAgent":"Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0",
+     "consent":"Y",
+     "name":req.body.name,
+     "consentTime":currentTime,
+     "consentText":"Consent accepted",
+     "clientData":{"caseId":caseId}},
+    json: true };
+  
+    console.log('+++++++++++++++++++++++++ aadhaar-consent request obj ++++++++++++++++++++++++++++++')
+    console.log(options.body);
+  request(options, function (error, response, body) {
+    if (error) throw new Error(error);
+    let consentResp = body;
+    console.log('+++++++++++++++++++++++++ aadhaar-consent Response obj ++++++++++++++++++++++++++++++')
+    console.log('consentResp', consentResp);
+   if(consentResp) {
+       setTimeout(() => {
+                var options = { method: 'POST',
+                url: 'https://testapi.karza.in/v3/get-aadhaar-otp',
+                headers: { 'content-type': 'application/json', 'x-karza-key': 'FQdEGtWHuHV4GebM' },
+                body:
+                {"consent": "Y",
+                "aadhaarNo": req.body.aadhaarNo,
+                "accessKey": consentResp.result.accessKey,
+                "clientData":{"caseId":caseId}},
+                json: true };
+            
+                console.log('+++++++++++++++++++++++++ aadhaar-OTP generation request obj ++++++++++++++++++++++++++++++')
+                console.log(options.body);
+                request(options, function (error, response, body) {
+                    if (error) throw new Error(error);
+                    console.log('+++++++++++++++++++++++++ aadhaar-OTP generation response obj ++++++++++++++++++++++++++++++');
+                    console.log(body);
+                    res.send(body)
+                })
+       }, 3000);
+   }
+
+
+  });
+
+}
+
+// userMaster.aadharOTPGeneration = function(req, res) {
+//     var options = { method: 'POST',
+//     url: 'https://testapi.karza.in/v3/get-aadhaar-otp',
+//     headers: { 'content-type': 'application/json', 'x-karza-key': 'FQdEGtWHuHV4GebM' },
+//     body:
+//      {"consent": "Y",
+//      "aadhaarNo": "937766457267",
+//      "accessKey": "f84055d8-e17b-4848-afc4-98e8ff3bd07b",
+//      "clientData":{"caseId":"810861"}},
+//     json: true };
+
+//     console.log('+++++++++++++++++++++++++ aadhaar-OTP generation request obj ++++++++++++++++++++++++++++++')
+//     console.log(options.body);
+//     request(options, function (error, response, body) {
+//         if (error) throw new Error(error);
+//         console.log('+++++++++++++++++++++++++ aadhaar-OTP generation response obj ++++++++++++++++++++++++++++++');
+//         console.log(body);
+//         res.send(body)
+//     })
+// }
+userMaster.aadharOTPVerification = function(req, res) {
+    let shareCode = randomize('0',4);
+    console.log('aadharOTPVerification req obj:', req.body);
+    var options = { method: 'POST',
+    url: 'https://testapi.karza.in/v3/get-aadhaar-file',
+    headers: { 'content-type': 'application/json', 'x-karza-key': 'FQdEGtWHuHV4GebM' },
+    body:
+    {
+        "consent": "Y",
+        "otp": req.body.otp,
+        "shareCode": shareCode,
+        "accessKey": req.body.accessKey,
+        "clientData": {
+          "caseId": req.body.caseId
+        }},
+    json: true };
+
+    console.log('+++++++++++++++++++++++++ aadhaar download request obj ++++++++++++++++++++++++++++++');
+    console.log(options.body);
+    request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+        console.log('+++++++++++++++++++++++++ aadhaar download response obj ++++++++++++++++++++++++++++++');
+        console.log(body);
+        let reqobj = body;
+        req.body.name = reqobj.result.dataFromAadhaar.name;
+        req.body.email_id = reqobj.result.dataFromAadhaar.emailHash;
+        req.body.mobile_no = reqobj.result.dataFromAadhaar.mobileHash;
+        return userService.createUser(req.body).then(resp => {
+            let responseObj = {};
+            responseObj['_id'] = resp._id;
+            responseObj['name'] = resp.name;
+            responseObj['created_at'] = resp.created_at;
+            res.send({
+                status : true,
+                msg: "User created successfully",
+                data : responseObj,
+            });
+        }, err => {
+            res.send({
+                status : true,
+                data : {},
+                msg: "Invalid Request"
+            });
+        }).catch(err => {
+            console.log('catch err', err)
+            res.send({
+                status : true,
+                data : {},
+                msg: "somthing went wrong"
+            });
+        })
+    })
 }
 
 userMaster.login = function(req,res) {

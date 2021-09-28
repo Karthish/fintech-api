@@ -54,8 +54,8 @@ module.exports = function(app) {
         });
 
         //Loans API
-        app.post('/api/v1/loan/create', loan.addNewLoan);
-        app.get('/api/v1/loan/list', loan.findLoans);
+       // app.post('/api/v1/loan/create', loan.addNewLoan);
+        //app.get('/api/v1/loan/list', loan.findLoans);
 
         app.post('/api/v1/user/create', user.createUser);
 
@@ -116,15 +116,15 @@ var sendPdf =  function(req,res){
 
     console.log("__dirname", __dirname);
     var mailOptions = {
-        from: '"Syzygy" <'+conf.mailer.id+'>',
-        to: 'nagarajd@syzygyenterprise.com',
+        from: '"company Name" <'+conf.mailer.id+'>',
+        to: 'to eamil ID',
         subject: 'sample-pdf',
         html: 'sample pdf attachment',
         attachments: [
             // String attachment
             {
                 filename: 'test.pdf',
-                path:__dirname+'/invoices/foo.pdf',
+                path:__dirname+'/config/sample.pdf',
                 contentType: 'application/pdf' // optional, would be detected from the filename
             }
         ]

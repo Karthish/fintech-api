@@ -1,4 +1,5 @@
-var userModel = require('../models/userModel.js');
+var userModel = require('../models/userModel');
+var custModal = require('../models/customerModel');
 
 var userMaster = {};
 
@@ -179,4 +180,24 @@ userMaster.addNewAdminUser = req => {
         }
     })
 }
+
+userMaster.createUser = req => {
+    return new Promise((resolve, reject)=> {
+        try{
+            custModal.create(req, function(err, user) {
+                console.log('db err', err);
+                console.log('db user', user);
+                if (err || !user) {
+                    return reject(err);
+                }else{
+                    return resolve(user);
+                }
+            });
+        }catch(err){
+            return reject(err);
+        }
+    })
+}
+
+
 module.exports = userMaster;

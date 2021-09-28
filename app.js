@@ -2,7 +2,15 @@ const express = require("express");
 var cors = require("cors");
 const app = express();
 //app.use(cors());
-app.use(cors({ origin: "http://localhost:4200" }));
+//app.use(cors({ origin: "http://localhost:4200" }));
+app.use(cors({
+  origin: ['http://localhost:4500', 'http://dvqxj9lu947gx.cloudfront.net','https://dvqxj9lu947gx.cloudfront.net']
+}));
+
+//console.log('location',navigator.geolocation);
+//let currentTime = new Date().getTime().toString();
+//console.log('currentTime', currentTime.substr(0,10));
+//console.log('currentTimeTrim', currentTime);
 
 // CORS
 // app.use(function (req, res, next) {
@@ -78,8 +86,8 @@ var connection = mongoose.connection;
 
 
 //app.use('/api',req)
-const tmproute = require('./testRouter');
-app.use('/api', tmproute);
+const appRouter = require('./app-router');
+app.use('/api/v1', appRouter);
 
 app.listen(port, function () {
   console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -88,3 +96,4 @@ app.listen(port, function () {
   );
   console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 });
+app.timeout = 120000;
