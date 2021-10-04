@@ -7,11 +7,53 @@ app.use(cors({
   origin: ['http://localhost:4500', 'http://dvqxj9lu947gx.cloudfront.net','https://dvqxj9lu947gx.cloudfront.net']
 }));
 
-//console.log('location',navigator.geolocation);
-//let currentTime = new Date().getTime().toString();
-//console.log('currentTime', currentTime.substr(0,10));
-//console.log('currentTimeTrim', currentTime);
+var multer = require('multer');
+//var upload = multer({dest:'./uploads/'});
 
+const aws = require('aws-sdk');
+const multerS3 = require('multer-s3');
+
+aws.config.update({
+  secretAccessKey: "mSAW8KqON+mFaoi+e5dbjYj7mHSXVu+j1ZL3h63q",
+  accessKeyId: "AKIAXE4CJVZ7GASIP5UX",
+  region: 'ap-south-1' //E.g us-east-1
+ });
+
+ const s3 = new aws.S3();
+
+/* To validate your file type */
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+   cb(null, true);
+  } else {
+   cb(new Error('Wrong file type, only upload JPEG and/or PNG !'), 
+   false);
+  }
+ };
+
+ const upload = multer({
+  fileFilter: fileFilter,
+  storage: multerS3({
+   acl: 'public-read',
+   s3,
+   bucket: 'aryaa-filecontianer-dev',
+   key: function(req, file, cb) {
+     /*I'm using Date.now() to make sure my file has a unique name*/
+     //console.log('req', req);
+     console.log('file', file);
+
+     req.file = Date.now() + file.originalname;
+     cb(null, Date.now() + file.originalname);
+    }
+   })
+  });
+
+  app.post('/api/v1/upload', upload.array('payslip', 1), (req, res) => {
+    /* This will be th 8e response sent from the backend to the frontend */
+    console.log('payslip response', req)
+    res.send({ image: req.file });
+
+   });
 // CORS
 // app.use(function (req, res, next) {
 //   // Websites allowed to connect
@@ -88,6 +130,23 @@ var connection = mongoose.connection;
 //app.use('/api',req)
 const appRouter = require('./app-router');
 app.use('/api/v1', appRouter);
+
+// app.post('/single', upload.single('file'), (req, res) => {
+//   try {
+//     res.send(req.file);
+//   }catch(err) {
+//     res.send(400);
+//   }
+// });
+
+// app.post('/bulk', upload.array('files', 4) , (req, res) =>{
+//   try {
+//       res.send(req.files);
+//   } catch(error) {
+//         console.log(error);
+//          res.send(400);
+//   }
+// });
 
 app.listen(port, function () {
   console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");

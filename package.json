@@ -1,5 +1,5 @@
 {
-  "name": "Fintech-server",
+  "name": "fintechserver",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -7,6 +7,7 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "aws-sdk": "^2.998.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
@@ -28,8 +29,11 @@
     "moment-timezone": "^0.5.21",
     "mongoose": "^5.2.17",
     "mongoose-timestamp": "^0.6.0",
+    "multer": "^1.4.3",
+    "multer-s3": "^2.9.0",
     "mv": "*",
     "nodemailer": "^4.6.7",
+    "nodemon": "^2.0.13",
     "path": "^0.12.7",
     "randomatic": "^3.1.1",
     "randomstring": "^1.1.5",

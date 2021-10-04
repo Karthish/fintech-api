@@ -170,6 +170,7 @@ userMaster.aadharOTPVerification = function(req, res) {
     })
 }
 
+
 userMaster.login = function(req,res) {
 	var user = req.body;
 	var output = {};
