@@ -15,7 +15,7 @@ userMaster.testFunction = function(req,res) {
 
 userMaster.panVerification = function(req,res) {
     console.log('enter here', "	https://testapi.karza.in/v2/pan");
-    var data = JSON.stringify({pan:'AMBPN4511G',consent: "Y"});
+    var data = JSON.stringify({pan:req.body.pan,consent: "Y"});
 
     console.log('+++++++++++++++++++++++++ PAN request obj ++++++++++++++++++++++++++++++')
     console.log(data);
