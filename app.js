@@ -13,47 +13,7 @@ var multer = require('multer');
 const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
 
-aws.config.update({
-  secretAccessKey: "mSAW8KqON+mFaoi+e5dbjYj7mHSXVu+j1ZL3h63q",
-  accessKeyId: "AKIAXE4CJVZ7GASIP5UX",
-  region: 'ap-south-1' //E.g us-east-1
- });
 
- const s3 = new aws.S3();
-
-/* To validate your file type */
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-   cb(null, true);
-  } else {
-   cb(new Error('Wrong file type, only upload JPEG and/or PNG !'), 
-   false);
-  }
- };
-
- const upload = multer({
-  fileFilter: fileFilter,
-  storage: multerS3({
-   acl: 'public-read',
-   s3,
-   bucket: 'aryaa-filecontianer-dev',
-   key: function(req, file, cb) {
-     /*I'm using Date.now() to make sure my file has a unique name*/
-     //console.log('req', req);
-     console.log('file', file);
-
-     req.file = Date.now() + file.originalname;
-     cb(null, Date.now() + file.originalname);
-    }
-   })
-  });
-
-  app.post('/api/v1/upload', upload.array('payslip', 1), (req, res) => {
-    /* This will be th 8e response sent from the backend to the frontend */
-    console.log('payslip response', req)
-    res.send({ image: req.file });
-
-   });
 // CORS
 // app.use(function (req, res, next) {
 //   // Websites allowed to connect
@@ -147,6 +107,54 @@ app.use('/api/v1', appRouter);
 //          res.send(400);
 //   }
 // });
+
+//console.log('config file', config);
+
+aws.config.update({
+  secretAccessKey: `${config.fileuploads3.secretAccessKey}`,
+  accessKeyId: `${config.fileuploads3.accessKeyId}`,
+  region: `${config.fileuploads3.region}`
+ });
+
+ const s3 = new aws.S3();
+
+/* To validate your file type */
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'pdf') {
+   cb(null, true);
+  } else {
+   cb(new Error('Wrong file type, only upload PDF file !'), 
+   false);
+  }
+ };
+
+ const upload = multer({
+  fileFilter: fileFilter,
+  storage: multerS3({
+   acl: `${config.fileuploads3.acl}`,
+   s3,
+   bucket: `${config.fileuploads3.bucket}`,
+   key: function(req, file, cb) {
+     /*I'm using Date.now() to make sure my file has a unique name*/
+     console.log('req', req);
+     //console.log('file', file);
+
+     req.file = Date.now() + file.originalname;
+     cb(null, Date.now() + file.originalname);
+    }
+   })
+  });
+
+  app.post('/api/v1/upload', upload.array('payslip', 1), (req, res) => {
+    /* This will be th 8e response sent from the backend to the frontend */
+    console.log('payslip response', req)
+    res.send({ image: req.file });
+
+   });
+
+   app.get('/api/v1/test', function(req,res) {
+     res.send('working fine')
+   })
 
 app.listen(port, function () {
   console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");

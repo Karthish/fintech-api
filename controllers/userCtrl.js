@@ -6,6 +6,7 @@ var jwt = require('jsonwebtoken');
 var random = require('randomstring');
 var randomize = require('randomatic');
 var request = require('request');
+var config = require('../config/config')[process.env.NODE_ENV || "dev"];;
 var userMaster = {};
 
 userMaster.testFunction = function(req,res) {
@@ -14,22 +15,28 @@ userMaster.testFunction = function(req,res) {
 }
 
 userMaster.panVerification = function(req,res) {
-    console.log('enter here', "	https://testapi.karza.in/v2/pan");
-    var data = JSON.stringify({pan:req.body.pan,consent: "Y"});
+    //console.log('enter here', req);
+    var data = JSON.stringify({pan:req.body.pan, consent: `${config.karza.consent}`});
 
     console.log('+++++++++++++++++++++++++ PAN request obj ++++++++++++++++++++++++++++++')
     console.log(data);
 
-
-    let panUrl = 'https://testapi.karza.in/v2/pan'
-    request.post({url:panUrl, headers: {
-        'Content-Type': 'application/json',
-        'x-karza-key': 'FQdEGtWHuHV4GebM'
+    request.post({url:`${config.pan.VERIFICATION_API}`, headers: {
+        'Content-Type': `${config.karza.app_type}`,
+        'x-karza-key': `${config.karza.auth_key}`
       }, body: data}, function(err,httpResponse,body){ 
         console.error('error:', err);
         //console.error('httpResponse:', httpResponse);
         console.error('body:', body);
-        res.send(body);
+        if(body['status-code'] == 101){
+            res.send(body);
+        }else {
+            res.send({
+                status:false,
+                msg: "Invalid request details"
+            })
+        }
+        
 
        })
 
@@ -38,19 +45,14 @@ userMaster.panVerification = function(req,res) {
 userMaster.aadharVerification = function(req, res) {
     let currentTime = new Date().getTime().toString().substr(0,10);
     let caseId = randomize('0',6);
-    console.log('caseId:',caseId, 'currentTime:', currentTime);
-    //req.body.name = "Kartheeswaran M" ;
-    //req.body.aadhaarNo = "681130340262";
-    //req.body.loan_type = 'HomeLoan';
-    //req.body.loan_description = 'home loan needs';
-    //req.body.loan_ref_id = "61439897e09de82c2cd628a7";
-    //req.body.current_page = 'aadhar verification';
-
     console.log("req Obj", req.body);
 
     var options = { method: 'POST',
-    url: 'https://testapi.karza.in/v3/aadhaar-consent',
-    headers: { 'content-type': 'application/json', 'x-karza-key': 'FQdEGtWHuHV4GebM' },
+    url: `${config.aadhar.CONSENT_API}`,
+    headers: { 
+        'Content-Type': `${config.karza.app_type}`,
+        'x-karza-key': `${config.karza.auth_key}`
+     },
     body:
      {"ipAddress":"12.12.12.12",
     "userAgent":"Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0",
@@ -71,8 +73,10 @@ userMaster.aadharVerification = function(req, res) {
    if(consentResp) {
        setTimeout(() => {
                 var options = { method: 'POST',
-                url: 'https://testapi.karza.in/v3/get-aadhaar-otp',
-                headers: { 'content-type': 'application/json', 'x-karza-key': 'FQdEGtWHuHV4GebM' },
+                url: `${config.aadhar.OTP_VERIFY_API}`,
+                headers: { 
+                    'Content-Type': `${config.karza.app_type}`,
+                    'x-karza-key': `${config.karza.auth_key}`},
                 body:
                 {"consent": "Y",
                 "aadhaarNo": req.body.aadhaarNo,
@@ -121,7 +125,10 @@ userMaster.aadharOTPVerification = function(req, res) {
     console.log('aadharOTPVerification req obj:', req.body);
     var options = { method: 'POST',
     url: 'https://testapi.karza.in/v3/get-aadhaar-file',
-    headers: { 'content-type': 'application/json', 'x-karza-key': 'FQdEGtWHuHV4GebM' },
+    headers: { 
+        'Content-Type': `${config.karza.app_type}`,
+        'x-karza-key': `${config.karza.auth_key}`
+     },
     body:
     {
         "consent": "Y",
@@ -129,7 +136,7 @@ userMaster.aadharOTPVerification = function(req, res) {
         "shareCode": shareCode,
         "accessKey": req.body.accessKey,
         "clientData": {
-          "caseId": req.body.caseId
+        "caseId": req.body.caseId
         }},
     json: true };
 

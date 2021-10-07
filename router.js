@@ -48,7 +48,7 @@ rootMaster.secureRoutes = function (req,res,next) {
 module.exports = rootMaster;
 
 module.exports = function(app) {
-     console.log('main app',app)
+    // console.log('main app',app)
         app.get('/v1/test', function(req, res){
           console.log('welocme to Fintech WEB APPLICATION')
         });

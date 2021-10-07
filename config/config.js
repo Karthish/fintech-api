@@ -15,7 +15,26 @@ config.dev = {
 	mailer : {
 		id: '',
 		password: ''
-	}	
+	},
+	karza:{
+		auth_key: 'FQdEGtWHuHV4GebM',
+		app_type: 'application/json',
+		consent: 'Y'
+	},
+	fileuploads3: {
+		secretAccessKey: "mSAW8KqON+mFaoi+e5dbjYj7mHSXVu+j1ZL3h63q",
+  		accessKeyId: "AKIAXE4CJVZ7GASIP5UX",
+  		region: 'ap-south-1',
+		bucket: 'aryaa-filecontianer-dev',
+		acl: 'public-read'
+	},
+	aadhar: {
+		CONSENT_API: 'https://testapi.karza.in/v3/aadhaar-consent',
+		OTP_VERIFY_API: 'https://testapi.karza.in/v3/get-aadhaar-otp',
+	},
+	pan: {
+		VERIFICATION_API : 'https://testapi.karza.in/v2/pan'
+	}  	
 };
 
 config.test = {
