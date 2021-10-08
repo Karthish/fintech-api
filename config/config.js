@@ -22,8 +22,8 @@ config.dev = {
 		consent: 'Y'
 	},
 	fileuploads3: {
-		secretAccessKey: "mSAW8KqON+mFaoi+e5dbjYj7mHSXVu+j1ZL3h63q",
-  		accessKeyId: "AKIAXE4CJVZ7GASIP5UX",
+		secretAccessKey: "mSAW8KqON+mFao",
+  		accessKeyId: "AKIAXE4CJVZ",
   		region: 'ap-south-1',
 		bucket: 'aryaa-filecontianer-dev',
 		acl: 'public-read'

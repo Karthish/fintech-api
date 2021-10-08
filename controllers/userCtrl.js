@@ -33,7 +33,8 @@ userMaster.panVerification = function(req,res) {
         }else {
             res.send({
                 status:false,
-                msg: "Invalid request details"
+                msg: "Invalid request details",
+                statusCode: body['status-code']
             })
         }
         

@@ -1,10 +1,13 @@
 const express = require('express');
 var router = express.Router();
-var user = require('./controllers/userCtrl.js');
-var loan  = require('./controllers/loanCtrl');
+
 var request = require('request');
 var multer = require('multer');
 var upload = multer({dest:'./uploads/'});
+
+var user = require('./controllers/userCtrl.js');
+var loan  = require('./controllers/loanCtrl');
+var config = require('./controllers/configCtrl');
 router.get('/healthCheck', (req, res) => {
     res.send('Application connected with API');
 });
@@ -12,6 +15,11 @@ router.get('/healthCheck', (req, res) => {
 
 //Test API
 router.get('tmproute', user.testFunction);
+
+//Config API
+
+router.post('/config/create', config.addConfig);
+router.get('/config/list', config.getConfig);
 
 //Loans API
 router.post('/loan/create', loan.addNewLoan);

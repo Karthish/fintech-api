@@ -152,6 +152,32 @@ const fileFilter = (req, file, cb) => {
 
    });
 
+   var configCtrl = require('./controllers/configCtrl');
+   var configService = require('./services/configService');
+
+   function getconfig(){
+     console.log('config list api trigger')
+    configCtrl.getConfig = (req, res) => {
+      return configService.findAll({}).then(result => {
+          res.send({
+              status: true,
+              msg: "Configuration list",
+              data: result[0]
+          })
+      }, err => {
+          res.send({
+              status: false,
+              msg: "Invalid Request"
+          })
+      }).catch(err => {
+          res.send({
+              status: false,
+              msg: "Unexpected Error"
+          })
+      })
+  }
+   }
+
    app.get('/api/v1/test', function(req,res) {
      res.send('working fine')
    })
@@ -162,5 +188,7 @@ app.listen(port, function () {
     "SERVER is listening the following port number: " + port
   );
   console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+  getconfig()
 });
 app.timeout = 120000;
