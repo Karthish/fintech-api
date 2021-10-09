@@ -81,7 +81,7 @@ userMaster.findByIdAndRemove = function(req) {
 userMaster.getUserById = req =>{
     return new Promise((resolve, reject)=> {
         try{
-            userModel.findById(req,function (err, data) {
+            custModal.findById(req,function (err, data) {
                 if (err || !data) {
                     return reject(err);
                 }else{
@@ -195,6 +195,22 @@ userMaster.createUser = req => {
             });
         }catch(err){
             return reject(err);
+        }
+    })
+}
+
+userMaster.findUser = req => {
+    return new Promise((resolve, reject) => {
+        try {
+            custModal.findOne(req, (err, user) => {
+                if(err || !user) {
+                    return reject(err)
+                }else{
+                    return resolve(user)
+                }
+            })
+        }catch(err){
+            return reject(err)
         }
     })
 }

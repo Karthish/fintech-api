@@ -25,11 +25,26 @@ userMaster.panVerification = function(req,res) {
         'Content-Type': `${config.karza.app_type}`,
         'x-karza-key': `${config.karza.auth_key}`
       }, body: data}, function(err,httpResponse,body){ 
-        console.error('error:', err);
+        console.log('error:', err);
         //console.error('httpResponse:', httpResponse);
-        console.error('body:', body);
-        if(body['status-code'] == 101){
-            res.send(body);
+        let panResult = JSON.parse(body);
+        if(panResult['status-code'] == "101"){
+            return userService.findUser({name:panResult.result.name}).then(result => {
+              res.send({
+                  status: true,
+                  msg: "Name is matched"
+              })  
+            }, err => {
+                res.send({
+                    status: false,
+                    msg: "Name is not matched"
+                })
+            }).catch(err => {
+                res.send({
+                    status: false,
+                    msg:"Unexpected Error"
+                })
+            })
         }else {
             res.send({
                 status:false,
@@ -38,7 +53,6 @@ userMaster.panVerification = function(req,res) {
             })
         }
         
-
        })
 
 }
@@ -88,10 +102,18 @@ userMaster.aadharVerification = function(req, res) {
                 console.log('+++++++++++++++++++++++++ aadhaar-OTP generation request obj ++++++++++++++++++++++++++++++')
                 console.log(options.body);
                 request(options, function (error, response, body) {
-                    if (error) throw new Error(error);
-                    console.log('+++++++++++++++++++++++++ aadhaar-OTP generation response obj ++++++++++++++++++++++++++++++');
-                    console.log(body);
-                    res.send(body)
+                    if (error) {
+                        console.log('OTP Generation Error', error)
+                        res.send({
+                            status:false,
+                            msg: error
+                        })
+                    } else {
+                        console.log('+++++++++++++++++++++++++ aadhaar-OTP generation response obj ++++++++++++++++++++++++++++++');
+                        console.log(body);
+                        res.send(body)
+                    }
+                    
                 })
        }, 3000);
    }
@@ -125,14 +147,14 @@ userMaster.aadharOTPVerification = function(req, res) {
     let shareCode = randomize('0',4);
     console.log('aadharOTPVerification req obj:', req.body);
     var options = { method: 'POST',
-    url: 'https://testapi.karza.in/v3/get-aadhaar-file',
+    url: `${config.aadhar.GET_AADHAR_FILE_API}`,
     headers: { 
         'Content-Type': `${config.karza.app_type}`,
         'x-karza-key': `${config.karza.auth_key}`
      },
     body:
     {
-        "consent": "Y",
+        "consent":`${config.karza.consent}`,
         "otp": req.body.otp,
         "shareCode": shareCode,
         "accessKey": req.body.accessKey,
@@ -358,4 +380,26 @@ userMaster.createUser = function(req, res){
     })
   })
 }
+
+userMaster.getUser = (req,res) => {
+    let id = req.params.id;
+    return userService.getUserById({_id:id}).then(result => {
+        res.send({
+            status: true,
+            msg: 'User details found',
+            data: result
+        })
+    }, err => {
+        res.send({
+            status: false,
+            msg: "Invalid user details"
+        })
+    }).catch(err => {
+        res.send({
+            status: false,
+            msg: "Unexpected Error"
+        })
+    })
+}
+
 module.exports = userMaster;

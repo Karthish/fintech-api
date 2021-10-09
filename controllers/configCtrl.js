@@ -1,5 +1,19 @@
 var configService = require('../services/configService');
 var configCtrl = {};
+//console.log('config controller enter');
+
+function getConfigData(){
+    return configService.findAll({}).then(result => {
+        console.log('config data', result[1])
+       
+    }, err => {
+        console.log('config err', err)
+        
+    }).catch(err => {
+        console.log('config catch err', err)
+    })
+}
+getConfigData();
 
 configCtrl.addConfig = (req, res) => {
     console.log("req obj in ctrl", req.body)
