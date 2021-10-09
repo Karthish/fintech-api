@@ -22,15 +22,16 @@ config.dev = {
 		consent: 'Y'
 	},
 	fileuploads3: {
-		secretAccessKey: "WFCeE5HmMCU5N9VltpGrxN9PxvcPdJw91f1IW3hk",
-  		accessKeyId: "AKIAXE4CJVZ7DXIMIEK6",
+		secretAccessKey: "xxxxxx",
+  		accessKeyId: "yyyyyyy",
   		region: 'ap-south-1',
-		bucket: 'aryaa-filecontianer-dev',
-		acl: 'public-read'
+		bucket: 'xxxxyyyyy',
+		acl: 'xyxyxy'
 	},
 	aadhar: {
 		CONSENT_API: 'https://testapi.karza.in/v3/aadhaar-consent',
 		OTP_VERIFY_API: 'https://testapi.karza.in/v3/get-aadhaar-otp',
+		GET_AADHAR_FILE_API: 'https://testapi.karza.in/v3/get-aadhaar-file'
 	},
 	pan: {
 		VERIFICATION_API : 'https://testapi.karza.in/v2/pan'
