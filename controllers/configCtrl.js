@@ -2,7 +2,7 @@ var configService = require('../services/configService');
 var configCtrl = {};
 //console.log('config controller enter');
 
-function getConfigData(){
+function getConfigData() {
     return configService.findAll({}).then(result => {
         console.log('config data', result[1])
        
