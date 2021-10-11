@@ -12,6 +12,11 @@ var customerSchema = new Schema({
     loan_description    : { type: String },
     loan_ref_id         : {type: Schema.ObjectId, ref:"loan"}, 
     professional_type   : { type: String },
+    organization_name   : { type: String },
+    monthly_income   : { type: String },
+    desired_fund_amount   : { type: String },
+    loan_tenure   : { type: String },
+    mothers_maiden_name   : { type: String },
     current_page        : { type: String },
     next_page           : { type: String },
     aadhar_no           : { type:  String },
@@ -28,7 +33,8 @@ var customerSchema = new Schema({
     approved_bank        : { type: String },
     approved_amount      : {type: Number},
     is_active            : {type: Boolean, default: false},
-    is_deleted           : {type: Boolean, default: false},
+    is_deleted           : {type: Boolean, default: false}
+
 });
 
 module.exports = mongoose.model("customers",customerSchema,"customers");
