@@ -16,7 +16,7 @@ userMaster.testFunction = function(req,res) {
 
 userMaster.panVerification = function(req,res) {
     //console.log('enter here', req);
-    var data = JSON.stringify({pan:req.body.pan, consent: `${config.karza.consent}`});
+    var data = JSON.stringify({pan:req.body.pan_no, consent: `${config.karza.consent}`});
 
     console.log('+++++++++++++++++++++++++ PAN request obj ++++++++++++++++++++++++++++++')
     console.log(data);
