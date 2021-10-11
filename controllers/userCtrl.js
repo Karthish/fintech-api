@@ -122,8 +122,8 @@ userMaster.aadharVerification = function(req, res) {
                     } else {
                         console.log('+++++++++++++++++++++++++ aadhaar-OTP generation response obj ++++++++++++++++++++++++++++++');
                         console.log(body);
-                        let response = JSON.parse(body)
-                        if(response['status-code'] == "101") {
+                        let response = body
+                        if(response['statusCode'] == "101" || response['statusCode'] == 101) {
                             res.send({
                                 status: true,
                                 msg: 'OTP generated successfully',
