@@ -34,7 +34,7 @@ config.dev = {
 		GET_AADHAR_FILE_API: 'https://testapi.karza.in/v3/get-aadhaar-file'
 	},
 	pan: {
-		VERIFICATION_API : 'https://testapi.karza.in/v2/pan'
+		VERIFICATION_API : 'https://testapi.karza.in/v3/pan-profile'
 	}  	
 };
 

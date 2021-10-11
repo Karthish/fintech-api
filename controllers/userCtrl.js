@@ -27,11 +27,13 @@ userMaster.panVerification = function(req,res) {
       }, body: data}, function(err,httpResponse,body){ 
         console.log('error:', err);
         //console.error('httpResponse:', httpResponse);
-        let panResult = JSON.parse(body);
-        if(panResult['status-code'] == "101"){
-            req.body.current_page = 'pan verification';
+        let panResult = body;
+        console.log('panResult:', panResult);
+        if(panResult['statusCode'] == 101 && panResult['aadhaarLinked'] && panResult['aadhaarMatch']){
+            req.body.current_page = 'pan-verification';
             req.body.next_page = 'cust-details';
             req.body.pan_name = panResult.result.name;
+            req.body.target = 'panDetails'
             return userService.findByIdAndUpdate(req.body).then(result => {
               res.send({
                   status: true,
@@ -41,7 +43,7 @@ userMaster.panVerification = function(req,res) {
             }, err => {
                 res.send({
                     status: false,
-                    msg: "Name is not matched"
+                    msg: "Invalid input details"
                 })
             }).catch(err => {
                 res.send({
@@ -52,7 +54,7 @@ userMaster.panVerification = function(req,res) {
         }else {
             res.send({
                 status:false,
-                msg: "Invalid request details",
+                msg: "Given PAN details are not matched with Aadhar",
                 statusCode: body['status-code']
             })
         }
@@ -201,8 +203,8 @@ userMaster.aadharOTPVerification = function(req, res) {
         req.body.name = reqobj.result.dataFromAadhaar.name;
         req.body.email_id = reqobj.result.dataFromAadhaar.emailHash;
         req.body.mobile_no = reqobj.result.dataFromAadhaar.mobileHash;
-        req.body.current_page = 'aadhar verification',
-        req.body.next_page = 'pan verification',
+        req.body.current_page = 'aadhar-verification',
+        req.body.next_page = 'pan-verification',
         req.body.aadhar_no = req.body.aadhar_no,
         req.body.aadhar_details = reqobj.result.dataFromAadhaar
         return userService.createUser(req.body).then(resp => {
@@ -453,5 +455,27 @@ userMaster.findByIdAndRemove = (req, res) => {
             msg: "Unexpected Error"
         })
     })
+}
+
+userMaster.updateUserDetails = (req,res) => {
+    req.body.target = 'customerDetails'
+    return userService.findByIdAndUpdate(req.body).then(result => {
+        res.send({
+            status: true,
+            msg: "User details updated",
+            data: result
+        })  
+      }, err => {
+          res.send({
+              status: false,
+              msg: "Invalid input details"
+          })
+      }).catch(err => {
+          res.send({
+              status: false,
+              msg:"Unexpected Error"
+          })
+      })
+
 }
 module.exports = userMaster;
