@@ -105,7 +105,7 @@ userMaster.aadharVerification = function(req, res) {
                     'x-karza-key': `${config.karza.auth_key}`},
                 body:
                 {"consent": "Y",
-                "aadhaarNo": req.body.aadhaarNo,
+                "aadhaarNo": req.body.aadhar_no,
                 "accessKey": consentResp.result.accessKey,
                 "clientData":{"caseId":caseId}},
                 json: true };
