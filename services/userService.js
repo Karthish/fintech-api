@@ -224,7 +224,7 @@ userMaster.findByIdAndUpdate = req => {
                 query['next_page'] =  req.next_page;
                 query['pan_name'] =  req.pan_name;
                 query['pan_no'] =  req.pan_no;
-            }else if(req.target == 'custDetails') {
+            }else if(req.target == 'customerDetails') {
                 query['professional_type'] =  req.professional_type;
                 query['organization_name'] =  req.organization_name;
                 query['monthly_income'] =  req.monthly_income;
