@@ -215,5 +215,25 @@ userMaster.findUser = req => {
     })
 }
 
+userMaster.findByIdAndUpdate = req => {
+    return new Promise((resolve, reject) => {
+        try {
+            custModal.findByIdAndUpdate(req.id, { 
+                current_page : req.current_page,
+                next_page : req.next_page,
+                pan_name : req.pan_name,
+                pan_no : req.pan_no
+            }, (err, user) => {
+                if(err || !user) {
+                    return reject(err)
+                }else{
+                    return resolve(user)
+                }
+            })
+        }catch(err){
+            return reject(err)
+        }
+    })
+}
 
 module.exports = userMaster;

@@ -29,10 +29,14 @@ userMaster.panVerification = function(req,res) {
         //console.error('httpResponse:', httpResponse);
         let panResult = JSON.parse(body);
         if(panResult['status-code'] == "101"){
-            return userService.findUser({name:panResult.result.name}).then(result => {
+            req.body.current_page = 'pan verification';
+            req.body.next_page = 'cust-details';
+            req.body.pan_name = panResult.result.name;
+            return userService.findByIdAndUpdate(req.body).then(result => {
               res.send({
                   status: true,
-                  msg: "Name is matched"
+                  msg: "PAN details updated",
+                  data: result
               })  
             }, err => {
                 res.send({
@@ -62,7 +66,14 @@ userMaster.aadharVerification = function(req, res) {
     let caseId = randomize('0',6);
     console.log("req Obj", req.body);
 
-    var options = { method: 'POST',
+    return userService.findUser({aadhar_no: req.body.aadhar_no}).then(result => {
+        res.send({
+            status: false,
+            msg: "Aadhar number is already exists",
+            data: result
+        })
+    }, err => {
+        var options = { method: 'POST',
     url: `${config.aadhar.CONSENT_API}`,
     headers: { 
         'Content-Type': `${config.karza.app_type}`,
@@ -80,7 +91,7 @@ userMaster.aadharVerification = function(req, res) {
   
     console.log('+++++++++++++++++++++++++ aadhaar-consent request obj ++++++++++++++++++++++++++++++')
     console.log(options.body);
-  request(options, function (error, response, body) {
+    request(options, function (error, response, body) {
     if (error) throw new Error(error);
     let consentResp = body;
     console.log('+++++++++++++++++++++++++ aadhaar-consent Response obj ++++++++++++++++++++++++++++++')
@@ -119,7 +130,10 @@ userMaster.aadharVerification = function(req, res) {
    }
 
 
-  });
+    });
+})
+
+    
 
 }
 
@@ -173,6 +187,10 @@ userMaster.aadharOTPVerification = function(req, res) {
         req.body.name = reqobj.result.dataFromAadhaar.name;
         req.body.email_id = reqobj.result.dataFromAadhaar.emailHash;
         req.body.mobile_no = reqobj.result.dataFromAadhaar.mobileHash;
+        req.body.current_page = 'aadhar verification',
+        req.body.next_page = 'pan verification',
+        req.body.aadhar_no = req.body.aadhar_no,
+        req.body.aadhar_details = reqobj.result.dataFromAadhaar
         return userService.createUser(req.body).then(resp => {
             let responseObj = {};
             responseObj['_id'] = resp._id;

@@ -13,9 +13,11 @@ var customerSchema = new Schema({
     loan_ref_id         : {type: Schema.ObjectId, ref:"loan"}, 
     professional_type   : { type: String },
     current_page        : { type: String },
+    next_page           : { type: String },
     aadhar_no           : { type:  String },
     aadhar_details      : Schema.Types.Mixed,
-    pan_details         : { type: String },
+    pan_no              : { type: String },
+    pan_name            : { type: String },
     proof_of_documents   : [{
         doc_url          : {type: String},
         type             : {type: String},
