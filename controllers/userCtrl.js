@@ -122,7 +122,21 @@ userMaster.aadharVerification = function(req, res) {
                     } else {
                         console.log('+++++++++++++++++++++++++ aadhaar-OTP generation response obj ++++++++++++++++++++++++++++++');
                         console.log(body);
-                        res.send(body)
+                        let response = JSON.parse(body)
+                        if(response['status-code'] == "101") {
+                            res.send({
+                                status: true,
+                                msg: 'OTP generated successfully',
+                                data: response
+                            })
+                        }else {
+                            res.send({
+                                status:false,
+                                msg:"Invalide request details",
+                                data: response
+                            })
+                        }
+                        
                     }
                     
                 })
@@ -420,4 +434,24 @@ userMaster.getUser = (req,res) => {
     })
 }
 
+userMaster.findByIdAndRemove = (req, res) => {
+    let id = req.params.id;
+    return userService.findByIdAndRemove({_id:id}).then(result => {
+        res.send({
+            status: true,
+            msg: 'User details removed successfully',
+            data: result
+        })
+    }, err => {
+        res.send({
+            status: false,
+            msg: "Invalid user details"
+        })
+    }).catch(err => {
+        res.send({
+            status: false,
+            msg: "Unexpected Error"
+        })
+    })
+}
 module.exports = userMaster;

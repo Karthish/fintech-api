@@ -61,8 +61,8 @@ userMaster.findAllEmp = function(req) {
 userMaster.findByIdAndRemove = function(req) {
     return new Promise((resolve, reject)=> {
         try {
-            userModel.findOneAndUpdate(req,{$set:{is_deleted: true, is_active: false}},
-                {new: true},
+            custModal.findByIdAndRemove(req,
+               
                 function(err, user) {
                     if(err || !user) {
                         return reject(err);
@@ -202,8 +202,8 @@ userMaster.createUser = req => {
 userMaster.findUser = req => {
     return new Promise((resolve, reject) => {
         try {
-            custModal.findOne(req, (err, user) => {
-                if(err || !user) {
+            custModal.find(req, (err, user) => {
+                if(err || user.length == 0) {
                     return reject(err)
                 }else{
                     return resolve(user)
@@ -235,5 +235,6 @@ userMaster.findByIdAndUpdate = req => {
         }
     })
 }
+
 
 module.exports = userMaster;

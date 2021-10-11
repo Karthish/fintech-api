@@ -36,7 +36,8 @@ router.post('/aadhar/otp/verify', user.aadharOTPVerification);
 //Check user status API
 router.get('/user/status/:id', user.getUser);
 
-
+//Testing purpose
+router.delete('/user/:id', user.findByIdAndRemove);
 //File Upload API
 router.post('/singleFile', upload.single('file'), (req, res) => {
   try {
