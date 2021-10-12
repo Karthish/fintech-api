@@ -54,7 +54,7 @@ userMaster.panVerification = function(req,res) {
         }else {
             res.send({
                 status:false,
-                msg: "Given PAN details are not matched with Aadhar",
+                msg: "Given PAN details are matched with Aadhar",
                 statusCode: body['status-code']
             })
         }
@@ -200,37 +200,45 @@ userMaster.aadharOTPVerification = function(req, res) {
         console.log('+++++++++++++++++++++++++ aadhaar download response obj ++++++++++++++++++++++++++++++');
         console.log(body);
         let reqobj = body;
-        req.body.name = reqobj.result.dataFromAadhaar.name;
-        req.body.email_id = reqobj.result.dataFromAadhaar.emailHash;
-        req.body.mobile_no = reqobj.result.dataFromAadhaar.mobileHash;
-        req.body.current_page = 'aadhar-verification',
-        req.body.next_page = 'pan-verification',
-        req.body.aadhar_no = req.body.aadhar_no,
-        req.body.aadhar_details = reqobj.result.dataFromAadhaar
-        return userService.createUser(req.body).then(resp => {
-            let responseObj = {};
-            responseObj['_id'] = resp._id;
-            responseObj['name'] = resp.name;
-            responseObj['created_at'] = resp.created_at;
+        if(reqobj.statusCode == 101){
+            req.body.name = reqobj.result.dataFromAadhaar.name;
+            req.body.email_id = reqobj.result.dataFromAadhaar.emailHash;
+            req.body.mobile_no = reqobj.result.dataFromAadhaar.mobileHash;
+            req.body.current_page = 'aadhar-verification',
+            req.body.next_page = 'pan-verification',
+            req.body.aadhar_no = req.body.aadhar_no,
+            req.body.aadhar_details = reqobj.result.dataFromAadhaar
+            return userService.createUser(req.body).then(resp => {
+                let responseObj = {};
+                responseObj['_id'] = resp._id;
+                responseObj['name'] = resp.name;
+                responseObj['created_at'] = resp.created_at;
+                res.send({
+                    status : true,
+                    msg: "User created successfully",
+                    data : responseObj,
+                });
+            }, err => {
+                res.send({
+                    status : true,
+                    data : {},
+                    msg: "Invalid Request"
+                });
+            }).catch(err => {
+                console.log('catch err', err)
+                res.send({
+                    status : true,
+                    data : {},
+                    msg: "somthing went wrong"
+                });
+            })
+        }else {
             res.send({
-                status : true,
-                msg: "User created successfully",
-                data : responseObj,
-            });
-        }, err => {
-            res.send({
-                status : true,
-                data : {},
-                msg: "Invalid Request"
-            });
-        }).catch(err => {
-            console.log('catch err', err)
-            res.send({
-                status : true,
-                data : {},
-                msg: "somthing went wrong"
-            });
-        })
+                status: false,
+                msg: reqobj
+            })
+        }
+    
     })
 }
 

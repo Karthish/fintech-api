@@ -54,7 +54,6 @@ app.use(express.static("./"));
 app.use(secureRoutes);
 var tmproutes = require("./router")
 var routes = require("./router")(app);
-mongoose.set("useFindAndModify", true);
 //const db = "mongodb+srv://admin:admin@cluster0.pvsbm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 //const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -62,7 +61,7 @@ mongoose
   .connect(`${config.db}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: true,
+    useFindAndModify: false
   })
   .then(
     () => {
