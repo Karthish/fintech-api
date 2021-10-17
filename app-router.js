@@ -8,6 +8,7 @@ var upload = multer({dest:'./uploads/'});
 var user = require('./controllers/userCtrl.js');
 var loan  = require('./controllers/loanCtrl');
 var config = require('./controllers/configCtrl');
+var bank = require('./controllers/bankCtrl');
 router.get('/healthCheck', (req, res) => {
     res.send('Application connected with API');
 });
@@ -17,7 +18,6 @@ router.get('/healthCheck', (req, res) => {
 router.get('tmproute', user.testFunction);
 
 //Config API
-
 router.post('/config/create', config.addConfig);
 router.get('/config/list', config.getConfig);
 
@@ -58,6 +58,10 @@ router.post('/multipleFile', upload.array('files', 4) , (req, res) =>{
 });
 
 
+//Bank details API call
+//Config API
+router.post('/bank/create', bank.addConfig);
+router.get('/bank/list', bank.getConfig);
 
 
 module.exports = router;
