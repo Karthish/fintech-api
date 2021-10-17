@@ -26,7 +26,7 @@ bankCtrl.getConfig = (req, res) => {
     return bankService.findAll({}).then(result => {
         res.send({
             status: true,
-            msg: "Configuration list",
+            msg: "Bank list",
             data: result
         })
     }, err => {
@@ -40,6 +40,8 @@ bankCtrl.getConfig = (req, res) => {
             msg: "Unexpected Error"
         })
     })
-}
+};
+
+
 
 module.exports = bankCtrl;

@@ -59,9 +59,9 @@ router.post('/multipleFile', upload.array('files', 4) , (req, res) =>{
 
 
 //Bank details API call
-//Config API
 router.post('/bank/create', bank.addConfig);
 router.get('/bank/list', bank.getConfig);
+router.post('/bank/update', user.updateBankDetails);
 
 
 module.exports = router;

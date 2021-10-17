@@ -233,6 +233,8 @@ userMaster.findByIdAndUpdate = req => {
                 query['mothers_maiden_name'] =  req.mothers_maiden_name;
                 query['current_page'] =  "cust-details";
                 query['next_page'] = "funding-options";
+            }else if(req.target == 'bankDetails'){
+                query['bank_ref_id'] = req.body.bank_ref_id;
             }
 
             custModal.findByIdAndUpdate(req.id, query, (err, user) => {

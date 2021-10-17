@@ -34,7 +34,9 @@ bankService.findAll = req => {
             return reject(err)
         }
     })
-}
+};
+
+
 
 
 module.exports = bankService;

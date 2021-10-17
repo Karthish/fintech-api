@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 //var employee = require('../models/employeeModel');
 var loan = require('../models/loanModel');
-
+var bank = require('../models/bankModel');
 var customerSchema = new Schema({
     name                : {type: String},
     email_id            : {type: String},
@@ -11,6 +11,7 @@ var customerSchema = new Schema({
     loan_type           : { type: String },
     loan_description    : { type: String },
     loan_ref_id         : {type: Schema.ObjectId, ref:"loan"}, 
+    bank_ref_id         : { type: Schema.ObjectId, ref:"bank"},
     professional_type   : { type: String },
     organization_name   : { type: String },
     monthly_income   : { type: String },

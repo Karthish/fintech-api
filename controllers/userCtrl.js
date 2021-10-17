@@ -486,4 +486,25 @@ userMaster.updateUserDetails = (req,res) => {
       })
 
 }
+userMaster.updateBankDetails = (req,res) => {
+    req.body.target = 'bankDetails'
+    return userService.findByIdAndUpdate(req.body).then(result => {
+        res.send({
+            status: true,
+            msg: "User details updated",
+            data: result
+        })  
+      }, err => {
+          res.send({
+              status: false,
+              msg: "Invalid input details"
+          })
+      }).catch(err => {
+          res.send({
+              status: false,
+              msg:"Unexpected Error"
+          })
+      })
+
+}
 module.exports = userMaster;
