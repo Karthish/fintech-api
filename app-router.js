@@ -1,24 +1,18 @@
 const express = require('express');
 var router = express.Router();
-
 var request = require('request');
-
-//var upload = multer({dest:'./uploads/'});
-
 var user = require('./controllers/userCtrl.js');
 var loan  = require('./controllers/loanCtrl');
 var config = require('./controllers/configCtrl');
 var bank = require('./controllers/bankCtrl');
-
-var configService = require('./services/configService');
 var multer = require('multer');
 const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
+var configService = require('./services/configService');
 
 router.get('/healthCheck', (req, res) => {
     res.send('Application connected with API');
 });
-
 
 //Test API
 router.get('tmproute', user.testFunction);
@@ -43,99 +37,64 @@ router.post('/aadhar/otp/verify', user.aadharOTPVerification);
 router.get('/user/status/:id', user.getUser);
 router.post('/user/details', user.updateUserDetails)
 
-//Testing purpose
+//Delete User Records
 router.delete('/user/:id', user.findByIdAndRemove);
-
-//File Upload API
-// router.post('/singleFile', upload.single('file'), (req, res) => {
-//   try {
-//     res.send(req.file);
-//   }catch(err) {
-//     res.send(400);
-//   }
-// });
-
-// router.post('/multipleFile', upload.array('files', 4) , (req, res) =>{
-//   try {
-//     res.send(req.files);
-// } catch(error) {
-//       console.log(error);
-//        res.send(400);
-// }
-// });
-
-let credentials;
-function getConfigData() {
-    return configService.findAll({}).then(result => {
-        console.log('config data', result[2]);
-        return credentials = result[2];
-              aws.config.update({
-                  secretAccessKey: credentials.secretAccessKey,
-                  accessKeyId: credentials.accessKeyId,
-                  region: credentials.region
-                 });
-                if(credentials){
-                  upload();
-                }
-               
-       
-    }, err => {
-        console.log('config err', err)
-        
-    }).catch(err => {
-        console.log('config catch err', err)
-    })
-
-    return credentials;
-}
-var data = getConfigData();
-
-console.log('data', data);
-const s3 = new aws.S3();
-/* To validate your file type */
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'pdf') {
-   cb(null, true);
-  } else {
-   cb(new Error('Wrong file type, only upload PDF file !'), 
-   false);
-  }
- };
-
-
-  // const upload =  multer({
-  //   fileFilter: fileFilter,
-  //   storage: multerS3({
-  //    acl: credentials.acl,
-  //    s3,
-  //    bucket: credentials.bucket,
-  //    key: function(req, file, cb) {
-  //      /*I'm using Date.now() to make sure my file has a unique name*/
-  //      console.log('req', req);
-  //      //console.log('file', file);
-  
-  //      req.file = Date.now() + file.originalname;
-  //      cb(null, Date.now() + file.originalname);
-  //     }
-  //    })
-  //   });
- 
- 
-
 
 //Bank details API call
 router.post('/bank/create', bank.addConfig);
 router.get('/bank/list', bank.getConfig);
 router.post('/bank/update', user.updateBankDetails);
-//router.post('/payslip/upload',  user.uploadPayslip);
 
-// router.post('/payslip/upload', upload.array('payslip', 1), (req, res) => {
-//   /* This will be th 8e response sent from the backend to the frontend */
-//   console.log('payslip response', req)
-//   res.send({ image: req.file });
+//Payslip Upload API
+var storage = multer.memoryStorage({
+  destination: function(req, file, callback) {
+      callback(null, '');
+  }
+});
 
-//  });
+var multipleUpload = multer({ storage: storage }).array('payslip');
+router.post('/payslip/upload',multipleUpload, function (req, res) {
+  const file = req.files;
+  console.log('files', file);
 
+    return configService.findAll({}).then(result => {
+    console.log('config data', result[0]);
+    let credentials = result[0];
+    let s3bucket = new aws.S3({
+      accessKeyId: credentials.accessKeyId,
+      secretAccessKey: credentials.secretAccessKey,
+      Bucket: credentials.bucket
+    });
+  s3bucket.createBucket(function () {
+        let Bucket_Path = 'https://aryaa-filecontianer-dev.s3.ap-south-1.amazonaws.com/fileuploads/';
+        //Where you want to store your file
+        var ResponseData = [];
+     
+  file.map((item) => {
+        var params = {
+          Bucket: credentials.bucket,
+          Key: item.originalname,
+          Body: item.buffer,
+          ACL: credentials.acl
+    };
+  s3bucket.upload(params, function (err, data) {
+          if (err) {
+           res.json({ "status": false, "Message": err});
+          }else{
+              ResponseData.push(data);
+              if(ResponseData.length == file.length){
+                res.json({ "status": true, "Message": "File Uploaded SuceesFully", data: ResponseData});
+              }
+            }
+         });
+       });
+     });
+ }, err => {
+   res.send({ "status":false, msg:"Invalid config details"})
+ }).catch(err => {
+   res.send({ "status":false, msg:"Something went wrong"})
+ })
+});
 
 module.exports = router;
 

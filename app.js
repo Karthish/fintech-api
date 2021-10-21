@@ -1,36 +1,12 @@
 const express = require("express");
 var cors = require("cors");
 const app = express();
-//app.use(cors());
-//app.use(cors({ origin: "http://localhost:4200" }));
 app.use(cors({
   origin: ['http://localhost:4500', 'http://dvqxj9lu947gx.cloudfront.net','https://dvqxj9lu947gx.cloudfront.net']
 }));
-
 var multer = require('multer');
-//var upload = multer({dest:'./uploads/'});
-
 const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
-
-
-// CORS
-// app.use(function (req, res, next) {
-//   // Websites allowed to connect
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   // Request methods to be allowed
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//   // Request headers to be allowed
-//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-//   // Pass to next layer of middleware
-//   res.setHeader('Content-Type', 'application/json');
-//   // setting header content-type application/json
-//   next();
-
-// });
-
-const secureRoutes = express.Router();
-const routerTest = express.Router();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 var timestamps = require("mongoose-timestamp");
@@ -47,17 +23,10 @@ mongoose.Promise = global.Promise;
 
 app.use(favicon(__dirname + "/fav.ico"));
 app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb'}));
-app.use(express.urlencoded({
-  extended: true
-}));
-app.use(express.static("./"));
-app.use(secureRoutes);
-var tmproutes = require("./router")
-var routes = require("./router")(app);
-//const db = "mongodb+srv://admin:admin@cluster0.pvsbm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-//const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+app.use(express.urlencoded({limit: '50mb',extended: false,
+parameterLimit: 1000000}));
 
+app.use(express.static("./"));
 mongoose
   .connect(`${config.db}`, {
     useNewUrlParser: true,
@@ -86,101 +55,10 @@ mongoose
   );
 var connection = mongoose.connection;
 
-
-//app.use('/api',req)
 const appRouter = require('./app-router');
+
+//Included API prefix to all the API
 app.use('/api/v1', appRouter);
-
-// app.post('/single', upload.single('file'), (req, res) => {
-//   try {
-//     res.send(req.file);
-//   }catch(err) {
-//     res.send(400);
-//   }
-// });
-
-// app.post('/bulk', upload.array('files', 4) , (req, res) =>{
-//   try {
-//       res.send(req.files);
-//   } catch(error) {
-//         console.log(error);
-//          res.send(400);
-//   }
-// });
-
-//console.log('config file', config);
-
-aws.config.update({
-  secretAccessKey: `${config.fileuploads3.secretAccessKey}`,
-  accessKeyId: `${config.fileuploads3.accessKeyId}`,
-  region: `${config.fileuploads3.region}`
- });
-
- const s3 = new aws.S3();
-
-/* To validate your file type */
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'pdf') {
-   cb(null, true);
-  } else {
-   cb(new Error('Wrong file type, only upload PDF file !'), 
-   false);
-  }
- };
-
- const upload = multer({
-  fileFilter: fileFilter,
-  storage: multerS3({
-   acl: `${config.fileuploads3.acl}`,
-   s3,
-   bucket: `${config.fileuploads3.bucket}`,
-   key: function(req, file, cb) {
-     /*I'm using Date.now() to make sure my file has a unique name*/
-     console.log('req', req);
-     //console.log('file', file);
-
-     req.file = Date.now() + file.originalname;
-     cb(null, Date.now() + file.originalname);
-    }
-   })
-  });
-
-  app.post('/api/v1/upload', upload.array('payslip', 1), (req, res) => {
-    /* This will be th 8e response sent from the backend to the frontend */
-    console.log('payslip response', req)
-    res.send({ image: req.file });
-
-   });
-
-   var configCtrl = require('./controllers/configCtrl');
-   var configService = require('./services/configService');
-
-   function getconfig(){
-     console.log('config list api trigger')
-    configCtrl.getConfig = (req, res) => {
-      return configService.findAll({}).then(result => {
-          res.send({
-              status: true,
-              msg: "Configuration list",
-              data: result[0]
-          })
-      }, err => {
-          res.send({
-              status: false,
-              msg: "Invalid Request"
-          })
-      }).catch(err => {
-          res.send({
-              status: false,
-              msg: "Unexpected Error"
-          })
-      })
-  }
-   }
-
-   app.get('/api/v1/test', function(req,res) {
-     res.send('working fine')
-   })
 
 app.listen(port, function () {
   console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -188,7 +66,4 @@ app.listen(port, function () {
     "SERVER is listening the following port number: " + port
   );
   console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
-  getconfig()
 });
-app.timeout = 120000;

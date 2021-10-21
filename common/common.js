@@ -37,7 +37,7 @@ common.sendMail = function(req, attachment) {
 	return new Promise((resolve, reject)=> {
 
 		var mailOptions = {
-		    from: '"CablePay" <'+config.mailer.id+'>',
+		    from: '"Aaryaa" <'+config.mailer.id+'>',
 		    to: req.to,
 		    subject: req.subject,
 		    html: req.html
