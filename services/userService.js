@@ -235,6 +235,8 @@ userMaster.findByIdAndUpdate = req => {
                 query['next_page'] = "funding-options";
             }else if(req.target == 'bankDetails'){
                 query['bank_ref_id'] = req.body.bank_ref_id;
+            }else if(req.target == 'payslipUpload'){
+                query['payslip_documents'] = req.files;
             }
 
             custModal.findByIdAndUpdate(req.id, query, (err, user) => {

@@ -24,12 +24,7 @@ var customerSchema = new Schema({
     aadhar_details      : Schema.Types.Mixed,
     pan_no              : { type: String },
     pan_name            : { type: String },
-    proof_of_documents   : [{
-        doc_url          : {type: String},
-        type             : {type: String},
-        id_proof_name    : {type: String},
-        createdAt       : {type: Date, default:Date.now},
-    }],
+    payslip_documents   : Schema.Types.Mixed,
     created_by           : {type: String},
     approved_bank        : { type: String },
     approved_amount      : {type: Number},
