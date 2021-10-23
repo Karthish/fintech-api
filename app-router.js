@@ -56,7 +56,7 @@ var storage = multer.memoryStorage({
 var multipleUpload = multer({ storage: storage }).array('payslip');
 router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
   console.log('id', req.params.id);
-  req.params.id = '61701b77e6e218498cfa29e9';
+  //req.params.id = '61701b77e6e218498cfa29e9';
   const file = req.files;
   console.log('files', file.length);
   console.log('files', file);
