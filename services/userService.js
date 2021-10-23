@@ -216,6 +216,7 @@ userMaster.findUser = req => {
 }
 
 userMaster.findByIdAndUpdate = req => {
+    console.log('findByIdAndUpdate', req);
     return new Promise((resolve, reject) => {
         try {
             let query = {};
@@ -225,6 +226,7 @@ userMaster.findByIdAndUpdate = req => {
                 query['pan_name'] =  req.pan_name;
                 query['pan_no'] =  req.pan_no;
             }else if(req.target == 'customerDetails') {
+                console.log('customerDetails', req.target);
                 query['professional_type'] =  req.professional_type;
                 query['organization_name'] =  req.organization_name;
                 query['monthly_income'] =  req.monthly_income;
@@ -234,13 +236,20 @@ userMaster.findByIdAndUpdate = req => {
                 query['current_page'] =  "cust-details";
                 query['next_page'] = "funding-options";
             }else if(req.target == 'bankDetails'){
-                query['bank_ref_id'] = req.body.bank_ref_id;
+                console.log('bankDetails', req.target);
+               // query['bank_ref_id'] = req.bank_ref_id;
+                query = {$set: { "bank_ref_id": req.bank_ref_id }}
             }else if(req.target == 'payslipUpload'){
+                console.log('payslipUpload', req.target);
                 query['payslip_documents'] = req.files;
             }
 
+            console.log('req', req);
+            console.log('query', query);
+
             custModal.findByIdAndUpdate(req.id, query, (err, user) => {
                 if(err || !user) {
+                    console.log('err', err);
                     return reject(err)
                 }else{
                     return resolve(user)
@@ -251,6 +260,5 @@ userMaster.findByIdAndUpdate = req => {
         }
     })
 }
-
 
 module.exports = userMaster;
