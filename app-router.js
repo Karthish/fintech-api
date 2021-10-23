@@ -58,15 +58,16 @@ router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
   console.log('id', req.params.id);
   req.params.id = '61701b77e6e218498cfa29e9';
   const file = req.files;
+  console.log('files', file.length);
   console.log('files', file);
   if(!file.length){
     res.send({status:false, msg:"Last 3 months payslips are required"})
   }
-  if(file.length < 1){
+  if(file.length < 3){
     res.send({ status: false, msg:"Last 3 months payslips are required"})
     return
   }
-  if(file.length > 1){
+  if(file.length > 3){
     res.send({ status: false, msg:"Payslip counts must be 3"})
     return
   }
