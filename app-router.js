@@ -46,6 +46,10 @@ router.post('/bank/create', bank.addConfig);
 router.get('/bank/list', bank.getConfig);
 router.post('/bank/update', user.updateBankDetails);
 
+
+//Refernce API call
+router.post('/user/reference', user.addOrUpdateReference);
+
 //Payslip Upload API
 var storage = multer.memoryStorage({
   destination: function(req, file, callback) {

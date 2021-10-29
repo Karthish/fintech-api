@@ -60,6 +60,9 @@ let userObj;
                         req.body.next_page = "cust-details";
                         req.body.pan_name = panResult.result.name;
                         req.body.target = "panDetails";
+                        req.body.email_id = panResult.result.emailId;
+                        req.body.mobile_no = panResult.result.mobileNo;
+
                         return userService
                           .findByIdAndUpdate(req.body)
                           .then(
@@ -619,6 +622,35 @@ userMaster.updateBankDetails = (req, res) => {
       });
     });
 };
+
+userMaster.addOrUpdateReference = (req, res) => {
+  req.body.target = "addReference";
+  return userService
+    .addOrUpdateReference(req.body)
+    .then(
+      (result) => {
+        res.send({
+          status: true,
+          msg: "User References updated",
+          //data: result,
+        });
+      },
+      (err) => {
+        res.send({
+          status: false,
+          msg: "Invalid input details",
+        });
+      }
+    )
+    .catch((err) => {
+      res.send({
+        status: false,
+        msg: "Unexpected Error",
+      });
+    });
+};
+
+
 
 
 module.exports = userMaster;

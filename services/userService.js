@@ -259,6 +259,25 @@ userMaster.findByIdAndUpdate = req => {
             return reject(err)
         }
     })
+};
+
+userMaster.addOrUpdateReference = req => {
+    console.log('addOrUpdateReference', req);
+    return new Promise((resolve, reject) => {
+        try {
+            custModal.updateMany(
+                { _id: req.id }, 
+                 { references: req.references },{ new: true }, function(err, doc){
+                     if(err){ return reject(err)}
+                     else{
+                         return resolve(doc)
+                     }
+                 });
+
+        }catch(err){
+            return reject(err)
+        }
+    })
 }
 
 module.exports = userMaster;

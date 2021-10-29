@@ -28,6 +28,13 @@ var customerSchema = new Schema({
     created_by           : {type: String},
     approved_bank        : { type: String },
     approved_amount      : {type: Number},
+    references           : [{
+                                name: { type:String },
+                                relationship: { type:String },
+                                pin_code: { type:String },
+                                phone_number: { type:String },
+        
+                            }],
     is_active            : {type: Boolean, default: false},
     is_deleted           : {type: Boolean, default: false}
 
