@@ -225,6 +225,9 @@ userMaster.findByIdAndUpdate = req => {
                 query['next_page'] =  req.next_page;
                 query['pan_name'] =  req.pan_name;
                 query['pan_no'] =  req.pan_no;
+                query['email_id'] =  req.email_id;
+                query['mobile_no'] =  req.mobile_no;
+
             }else if(req.target == 'customerDetails') {
                 console.log('customerDetails', req.target);
                 query['professional_type'] =  req.professional_type;
