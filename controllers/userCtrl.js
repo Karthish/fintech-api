@@ -650,6 +650,37 @@ userMaster.addOrUpdateReference = (req, res) => {
     });
 };
 
+userMaster.updateDetails = (req, res) => {
+  let id = req.params.id;
+  req.body.id = id;
+  req.body.target = "updateUser";
+  req.body.email_id = 'nagaraj-update@gmail.com';
+  
+  return userService
+    .findByIdAndUpdate(req.body)
+    .then(
+      (result) => {
+        res.send({
+          status: true,
+          msg: "User details updated",
+          data: result,
+        });
+      },
+      (err) => {
+        res.send({
+          status: false,
+          msg: "Invalid input details",
+        });
+      }
+    )
+    .catch((err) => {
+      res.send({
+        status: false,
+        msg: "Unexpected Error",
+      });
+    });
+}
+
 
 
 

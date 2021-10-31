@@ -49,6 +49,10 @@ router.post('/bank/update', user.updateBankDetails);
 
 //Refernce API call
 router.post('/user/reference', user.addOrUpdateReference);
+router.put('/user/details/update/:id', user.updateDetails);
+
+//Test Update API call
+//router.post('/user/update', user.updateDetails);
 
 //Payslip Upload API
 var storage = multer.memoryStorage({

@@ -221,30 +221,36 @@ userMaster.findByIdAndUpdate = req => {
         try {
             let query = {};
             if(req.target == 'panDetails') {
-                query['current_page'] =  req.current_page;
-                query['next_page'] =  req.next_page;
-                query['pan_name'] =  req.pan_name;
-                query['pan_no'] =  req.pan_no;
-                query['email_id'] =  req.email_id;
-                query['mobile_no'] =  req.mobile_no;
+                query = {$set: { "current_page": req.current_page, 
+                                  "next_page":req.next_page,
+                                  "pan_name":req.pan_name,
+                                  "email_id":req.email_id,
+                                  "mobile_no":req.mobile_no,
+                                }}
 
             }else if(req.target == 'customerDetails') {
                 console.log('customerDetails', req.target);
-                query['professional_type'] =  req.professional_type;
-                query['organization_name'] =  req.organization_name;
-                query['monthly_income'] =  req.monthly_income;
-                query['desired_fund_amount'] =  req.desired_fund_amount;
-                query['loan_tenure'] =  req.loan_tenure;
-                query['mothers_maiden_name'] =  req.mothers_maiden_name;
-                query['current_page'] =  "cust-details";
-                query['next_page'] = "funding-options";
+                //query['professional_type'] =  req.professional_type;
+                //query['organization_name'] =  req.organization_name;
+                //query['monthly_income'] =  req.monthly_income;
+                //query['desired_fund_amount'] =  req.desired_fund_amount;
+                //query['loan_tenure'] =  req.loan_tenure;
+                //query['mothers_maiden_name'] =  req.mothers_maiden_name;
+                //query['current_page'] =  "cust-details";
+                //query['next_page'] = "funding-options";
+                query = {$set: req}
             }else if(req.target == 'bankDetails'){
                 console.log('bankDetails', req.target);
                // query['bank_ref_id'] = req.bank_ref_id;
                 query = {$set: { "bank_ref_id": req.bank_ref_id }}
             }else if(req.target == 'payslipUpload'){
                 console.log('payslipUpload', req.target);
-                query['payslip_documents'] = req.files;
+                //query['payslip_documents'] = req.files;
+                query = {$set: { "payslip_documents": req.files }}
+            } else if(req.target == 'updateUser') {
+                query = {$set: req};
+                //query['email_id'] = req.email_id;
+                //query['mobile_no'] = req.mobile_no;
             }
 
             console.log('req', req);
