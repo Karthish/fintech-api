@@ -8,12 +8,24 @@ var configService = require('../services/configService');
 const aws = require('aws-sdk');
 var env = require('dotenv').config();
 
-const s3 = new aws.S3({
-	  accessKeyId: env.parsed.ACCESS_kEY_ID.split('_')[1],
-      secretAccessKey:env.parsed.SECRET_KEY_ID.split('_')[1],
-      Bucket: env.parsed.BUCKET_NAME.split('_')[1],
-})
+let s3 = new aws.S3();
 var common = {};
+function getConfig() {
+	  return configService.findAll({}).then(result => {
+							console.log('config data', result[0]);
+						 	let credentials = result[0];
+					 	//s3 upload code here
+						 	 s3 = new aws.S3({
+					 	  	accessKeyId: credentials.accessKeyId,
+						 	  secretAccessKey: credentials.secretAccessKey,
+						 	  Bucket: credentials.bucket
+						 	});
+						})
+					}
+
+	
+
+getConfig();
 
 common.genHash = function(pass) {
     // console.log('pass',pass);
@@ -52,7 +64,7 @@ common.sendMail = function(req, attachment) {
 		    html: req.html
 		};
 		if (attachment) {
-			mailOptions['attachments'] = [{filename: 'invoice.pdf',path:attachment.path,contentType: 'application/pdf'}]
+			mailOptions['attachments'] = [{filename: 'sanction-letter.pdf',path:attachment.path,contentType: 'application/pdf'}]
 		}
 
 		transporter.sendMail(mailOptions, function(err, res){
