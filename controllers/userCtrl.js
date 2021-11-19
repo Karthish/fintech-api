@@ -5,11 +5,144 @@ var random = require("randomstring");
 var randomize = require("randomatic");
 var request = require("request");
 var config = require("../config/config")[process.env.NODE_ENV || "dev"];
-
+var pdf = require('html-pdf');
 var userMaster = {};
-
+console.log('dirname', __dirname+'./');
 userMaster.testFunction = function (req, res) {
-  res.send("working fine");
+  //res.send("working fine");
+  var html = `<html>
+              <head>
+              <title>Sanction Letter</title></head>
+              <body>
+              <button class="btn btn-success btn-block">E-Sign PDF</button>
+<div id="sanctionLetter_pdfData" class="p-5" style="font-size: 1.2rem;font-family: 'regular_font', sans-serif!important;">
+    <div class="date mb-3">31-10-2021</div>
+    <ul class="address" style="list-style-type: none;padding: 0;">
+        <li>Company Name</li>
+        <li>Address Line</li>
+        <li>Company City, state, zipcode</li>
+    </ul>
+    <h4 class="mt-3" style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">Congralations!</h4>
+    <p>
+        We are pleased to inform you that, after evaluating your request, Bank Name has approved the following term loan 
+        subject to conditions detailed below:
+    </p>
+    <table class="mt-3 mb-3">
+        <tbody>
+            <tr>
+                <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER</h4></td>
+                <td>COMPANY NAME</td>
+            </tr>
+            <tr>
+                <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">AMOUNT</h4></td>
+                <td>$</td>
+            </tr>
+            <tr>
+                <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">RATE (%)</h4></td>
+                <td>%</td>
+            </tr>
+            <tr>
+                <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">LATE CHARGES (%)</h4></td>
+                <td>5.00</td>
+            </tr>
+            <tr>
+                <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">DEFAULT RATE (%)</h4></td>
+                <td>2.00</td>
+            </tr>
+            <tr>
+                <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">PREPAYMENT PENALTY (%)</h4></td>
+                <td>3.00</td>
+            </tr>
+            <tr>
+                <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">REPAYMENT</h4></td>
+                <td>
+                    This term loan will be repaid by 59 consecutive monthly payments of principal and interest of 
+                    $, with a final payment (60) of $plus any accured interest and/or late charges accumulated, 
+                    if applicable.
+                </td>
+            </tr>
+            <tr>
+                <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">PERSONAL GUARANTEE</h4></td>
+                <td>
+                    <h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">INCLUDE DETAILS AS IN APPLICATION</h4>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p>
+        This approval is subject to additional validations and delivery of business documents. In addition, if you have 
+        an existing commercial credit relationship with us the approval will be subject to verification of payment and 
+        financial performance of those credit facilities.
+    </p>
+    <p>
+        This commitment is subject to the preparation, execution, and delivery of documentation in the form and substance 
+        satisfactory to Bank Name, in which, in addition to substantially incorporating the terms and conditions set forth above,
+        other terms and conditions will be included as necessary for this type of transaction.
+    </p>
+    <p>Please evidence your approval of the foregoing by consenting this commitment letter.</p>
+    <h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">This offer expires in 10 days.</h4>
+
+    <div class="d-flex justify-content-between mt-4">
+        <div>
+            concent
+        </div>
+        <div>
+            Date
+        </div>
+    </div>
+</div>
+              </body>
+              </html>`;
+
+  // pdf.create(html).toStream((err, stream) => {
+
+  //   if (err) {
+
+  //     console.error(err);
+  //     res.status(500);
+  //     res.end(JSON.stringify(err));
+
+  //     return;
+  //   }
+
+  //   res.setHeader('Content-Type', 'application/pdf');
+  //   res.setHeader('Content-Disposition', 'attachment; filename=test-file.pdf;');
+
+  //   stream.pipe(res);
+  // });
+
+
+//   pdf.create(html).toFile('./pdf/invoice.pdf', function(err, file) {
+//     if (err) {
+//       console.log('file error',err);
+//     }else {
+//       console.log('file path', file);
+//       let obj = {};
+//       obj['subject'] = 'file attachment';
+//       obj['html'] = 'file attachment';
+//       obj['to'] = 'nagaraj.info6@gmail.com';
+
+//       return common.sendMail(obj,file.filename).then(response => {
+//         console.log('email response', response);
+//         res.send({status: true, msg:"Invoice document send to the given email ID "})
+//       })
+//     }
+// });
+
+return common.createPdf(html,'').then(response => {
+  console.log('uploaded file path', response);
+  let filePath = response
+  let obj = {};
+      obj['subject'] = 'file attachment';
+      obj['html'] = 'file attachment';
+      obj['to'] = 'nagaraj.info6@gmail.com';
+
+      return common.sendMail(obj,filePath).then(response => {
+        console.log('email response', response);
+        res.send({status: true, msg:"Invoice document send to the given email ID "})
+      })
+})
+
 };
 
 userMaster.panVerification = function (req, res) {
@@ -679,8 +812,150 @@ userMaster.updateDetails = (req, res) => {
         msg: "Unexpected Error",
       });
     });
-}
+};
 
+userMaster.sanctionPdfDownload = (req, res) => {
+  let id = req.body.id;
+  //let id = "617ec47b8adea25838111388";
+  return userService
+    .getUserById({ _id: id })
+    .then(
+      (result) => {
+        console.log('getUserById result',result )
+        if(result.is_esigned || result.sanction_lettter_url){
+          console.log('if')
+          let pdfUrl = result.sanction_lettter_singned_url ? result.sanction_lettter_singned_url : result.sanction_lettter_url;
+          res.send({
+            status: true,
+            msg: "sanction letter details",
+            data: pdfUrl,
+          });
+        } else {
+          console.log('else')
+          var html = `<!doctype html> <html lang="en">
+          <head>
+          <title>Sanction Letter</title></head>
+          <body>
+          <button class="btn btn-success btn-block">E-Sign PDF</button>
+          <div id="sanctionLetter_pdfData" class="p-5" style="font-size: 1.2rem;font-family: 'regular_font', sans-serif!important;">
+          <div class="date mb-3">31-10-2021</div>
+          <ul class="address" style="list-style-type: none;padding: 0;">
+              <li>Company Name</li>
+              <li>Address Line</li>
+              <li>Company City, state, zipcode</li>
+          </ul>
+          <h4 class="mt-3" style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">Congralations!</h4>
+          <p>
+              We are pleased to inform you that, after evaluating your request, Bank Name has approved the following term loan 
+              subject to conditions detailed below:
+          </p>
+          <table class="mt-3 mb-3">
+              <tbody>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER</h4></td>
+                      <td>COMPANY NAME</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">AMOUNT</h4></td>
+                      <td>$</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">RATE (%)</h4></td>
+                      <td>%</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">LATE CHARGES (%)</h4></td>
+                      <td>5.00</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">DEFAULT RATE (%)</h4></td>
+                      <td>2.00</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">PREPAYMENT PENALTY (%)</h4></td>
+                      <td>3.00</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">REPAYMENT</h4></td>
+                      <td>
+                          This term loan will be repaid by 59 consecutive monthly payments of principal and interest of 
+                          $, with a final payment (60) of $plus any accured interest and/or late charges accumulated, 
+                          if applicable.
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">PERSONAL GUARANTEE</h4></td>
+                      <td>
+                          <h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">INCLUDE DETAILS AS IN APPLICATION</h4>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+          <p>
+              This approval is subject to additional validations and delivery of business documents. In addition, if you have 
+              an existing commercial credit relationship with us the approval will be subject to verification of payment and 
+              financial performance of those credit facilities.
+          </p>
+          <p>
+              This commitment is subject to the preparation, execution, and delivery of documentation in the form and substance 
+              satisfactory to Bank Name, in which, in addition to substantially incorporating the terms and conditions set forth above,
+              other terms and conditions will be included as necessary for this type of transaction.
+          </p>
+          <p>Please evidence your approval of the foregoing by consenting this commitment letter.</p>
+          <h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">This offer expires in 10 days.</h4>
+
+          <div class="d-flex justify-content-between mt-4">
+              <div>
+                  concent
+              </div>
+              <div>
+                  Date
+              </div>
+          </div>
+          </div>
+          </body>
+          </html>`;
+
+          return common.createPdf(html,'').then(response => {
+            console.log('uploaded file path', response);
+            let filePath = response.Location;
+            // res.send({
+            //   status: true,
+            //   msg: "sanction letter details shared",
+            //   data: filePath
+            // })
+            var reqObj = {};
+            reqObj['id'] = id;
+            reqObj['sanction_lettter_url'] = filePath;
+            reqObj['target'] = 'sanction-letter-upload';
+            return userService.findByIdAndUpdate(reqObj).then(resp => {
+            res.json({ "status": true, "Message": "Sanction Letter details", data: filePath});
+            }, err => {
+              res.send({ "status": false, msg: err.message });
+            }).catch(err => {
+              res.send({ "status": false, msg: err.message });
+            })
+          }, err => {
+            res.send({ status:false, msg: err.message})
+          }).catch(err => {res.send({ status:false, msg: err.message})})
+        }
+        
+      },
+      (err) => {
+        res.send({
+          status: false,
+          msg: "Invalid user details",
+        });
+      }
+    )
+    .catch((err) => {
+      res.send({
+        status: false,
+        msg: "Unexpected Error",
+      });
+    }); 
+
+}
 
 
 

@@ -13,8 +13,8 @@ config.dev = {
 	host : "http://localhost",
     node_port : 8870,
 	mailer : {
-		id: '',
-		password: ''
+		id: 'nagaraj.info6@gmail.com',
+		password: '9884353315'
 	},
 	karza:{
 		auth_key: 'FQdEGtWHuHV4GebM',

@@ -16,7 +16,7 @@ router.get('/healthCheck', (req, res) => {
 });
 
 //Test API
-router.get('tmproute', user.testFunction);
+router.get('/tmproute', user.testFunction);
 
 //Config API
 router.post('/config/create', config.addConfig);
@@ -51,8 +51,9 @@ router.post('/bank/update', user.updateBankDetails);
 router.post('/user/reference', user.addOrUpdateReference);
 router.put('/user/details/update/:id', user.updateDetails);
 
-//Test Update API call
-//router.post('/user/update', user.updateDetails);
+//Sanction Letter API call
+router.post('/user/sanction/download', user.sanctionPdfDownload);
+
 
 //Payslip Upload API
 var storage = multer.memoryStorage({
@@ -91,7 +92,7 @@ router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
   console.log('fileType', fileType.length);
 
   if(fileType.length){
-    res.send({ status: false, msg:'PDF file format is supported'})
+    res.send({ status: false, msg:'PDF file format only is supported'})
     return
   }
 

@@ -35,6 +35,11 @@ var customerSchema = new Schema({
                                 phone_number: { type:String },
         
                             }],
+
+    sanction_lettter_url : {type: String}, 
+    sanction_lettter_singned_url : {type: String}, 
+    is_esigned : {type: Boolean, default: false},
+    esigned_date : {type: Date},
     is_active            : {type: Boolean, default: false},
     is_deleted           : {type: Boolean, default: false}
 

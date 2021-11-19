@@ -251,6 +251,8 @@ userMaster.findByIdAndUpdate = req => {
                 query = {$set: req};
                 //query['email_id'] = req.email_id;
                 //query['mobile_no'] = req.mobile_no;
+            } else if(req.target == 'sanction-letter-upload'){
+                query = {$set: req}; 
             }
 
             console.log('req', req);
