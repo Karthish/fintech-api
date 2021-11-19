@@ -230,14 +230,6 @@ userMaster.findByIdAndUpdate = req => {
 
             }else if(req.target == 'customerDetails') {
                 console.log('customerDetails', req.target);
-                //query['professional_type'] =  req.professional_type;
-                //query['organization_name'] =  req.organization_name;
-                //query['monthly_income'] =  req.monthly_income;
-                //query['desired_fund_amount'] =  req.desired_fund_amount;
-                //query['loan_tenure'] =  req.loan_tenure;
-                //query['mothers_maiden_name'] =  req.mothers_maiden_name;
-                //query['current_page'] =  "cust-details";
-                //query['next_page'] = "funding-options";
                 query = {$set: req}
             }else if(req.target == 'bankDetails'){
                 console.log('bankDetails', req.target);
@@ -252,6 +244,9 @@ userMaster.findByIdAndUpdate = req => {
                 //query['email_id'] = req.email_id;
                 //query['mobile_no'] = req.mobile_no;
             } else if(req.target == 'sanction-letter-upload'){
+                query = {$set: req}; 
+            
+            } else if(req.target == 'sanction-letter-esign'){
                 query = {$set: req}; 
             }
 

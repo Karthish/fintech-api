@@ -125,6 +125,7 @@ common.createPdf = function(req, option) {
 												console.log(err, 'err');
 											}
 											console.log(file, 'res s3 path');
+											file['attachment_path'] = pdfPath;
 											resolve(file)
 										});
 								//});

@@ -54,6 +54,10 @@ router.put('/user/details/update/:id', user.updateDetails);
 //Sanction Letter API call
 router.post('/user/sanction/download', user.sanctionPdfDownload);
 
+router.post('/user/sanction/attachment', user.sanctionAttachment);
+
+router.post('/user/sanction/esign', user.esignVerification);
+
 
 //Payslip Upload API
 var storage = multer.memoryStorage({
