@@ -5,7 +5,7 @@ var userMaster = {};
 
 
 userMaster.findOne = function(req) {
-    console.log('req',req);
+    //console.log('req',req);
     return new Promise((resolve, reject) =>{
 		try{
 			userModel.findOne(req, function(err, user) {
@@ -216,43 +216,27 @@ userMaster.findUser = req => {
 }
 
 userMaster.findByIdAndUpdate = req => {
-    console.log('findByIdAndUpdate', req);
     return new Promise((resolve, reject) => {
         try {
             let query = {};
-            if(req.target == 'panDetails') {
-                query = {$set: { "current_page": req.current_page, 
-                                  "next_page":req.next_page,
-                                  "pan_name":req.pan_name,
-                                  "email_id":req.email_id,
-                                  "mobile_no":req.mobile_no,
-                                }}
-
+            if(req.target == 'aadhar-details') {
+                query = {$set: req};
             }else if(req.target == 'customerDetails') {
-                console.log('customerDetails', req.target);
-                query = {$set: req}
+                query = {$set: req};
             }else if(req.target == 'bankDetails'){
-                console.log('bankDetails', req.target);
-               // query['bank_ref_id'] = req.bank_ref_id;
                 query = {$set: { "bank_ref_id": req.bank_ref_id }}
             }else if(req.target == 'payslipUpload'){
-                console.log('payslipUpload', req.target);
-                //query['payslip_documents'] = req.files;
                 query = {$set: { "payslip_documents": req.files }}
             } else if(req.target == 'updateUser') {
                 query = {$set: req};
-                //query['email_id'] = req.email_id;
-                //query['mobile_no'] = req.mobile_no;
             } else if(req.target == 'sanction-letter-upload'){
                 query = {$set: req}; 
-            
             } else if(req.target == 'sanction-letter-esign'){
                 query = {$set: req}; 
             }
 
             console.log('req', req);
             console.log('query', query);
-
             custModal.findByIdAndUpdate(req.id, query, (err, user) => {
                 if(err || !user) {
                     console.log('err', err);

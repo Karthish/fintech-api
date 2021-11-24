@@ -146,101 +146,136 @@ return common.createPdf(html,'').then(response => {
 };
 
 userMaster.panVerification = function (req, res) {
-  //console.log('enter here', req);
+  console.log('enter here', req.body);
+  let reqObj = req.body;
+  if(!reqObj.pan_no){
+    res.send({
+      status:false, msg:"PAN Number is required", data:{}
+    })
+    return
+  }
 let userObj;
-  return userService.getUserById({ _id: req.body.id }).then(
-    (result) => {
-        userObj = result;
-        var data = JSON.stringify({
-            pan: req.body.pan_no,
-            consent: `${config.karza.consent}`,
-            name: userObj.name
-          });
+   return userService.findOne({pan_no:reqObj.pan_no}).then(result => {
+    res.send({status:true, msg:"PAN details already exists", data:result})
+   },err => {
+    var data = JSON.stringify({
+      pan: reqObj.pan_no,
+      consent: `${config.karza.consent}`,
+    });
 
-          console.log(
-            "+++++++++++++++++++++++++ PAN request obj ++++++++++++++++++++++++++++++"
-          );
-          console.log(data);
-          request.post(
-            {
-              url: `${config.pan.VERIFICATION_API}`,
-              headers: {
-                "Content-Type": `${config.karza.app_type}`,
-                "x-karza-key": `${config.karza.auth_key}`,
-              },
-              body: data,
-            },
-            function (err, httpResponse, body) {
-              console.log("error:", err);
-              //console.error('httpResponse:', httpResponse);
-              let panResult = JSON.parse(body);
-              console.log("panResult type:", typeof(panResult));
-              console.log("panResult :", JSON.stringify(panResult));
-              if (panResult.statusCode == 101 ||  panResult.statusCode == '101') {
-                  let records = panResult.result.profileMatch;
-                  let filterData = records.filter(function(record){
+    console.log(
+      "+++++++++++++++++++++++++ PAN request obj ++++++++++++++++++++++++++++++"
+    );
+    console.log(data);
+    request.post(
+      {
+        url: `${config.pan.VERIFICATION_API}`,
+        headers: {
+          "Content-Type": `${config.karza.app_type}`,
+          "x-karza-key": `${config.karza.auth_key}`,
+        },
+        body: data,
+      },
+      function (err, httpResponse, body) {
+        console.log("error:", err);
+        //console.error('httpResponse:', httpResponse);
+        let panResult = JSON.parse(body);
+        console.log("panResult type:", typeof(panResult));
+        console.log("panResult :", JSON.stringify(panResult));
+        if (panResult.statusCode == 101 ||  panResult.statusCode == '101') {
+            let records = panResult.result.profileMatch;
+            req.body.current_page = "pan-verification";
+            req.body.next_page = "aadhar-verification";
+            req.body.pan_name = panResult.result.name;
+           // req.body.target = "panDetails";
+            req.body.email_id = panResult.result.emailId ? panResult.result.emailId : null ;
+            req.body.mobile_no = panResult.result.mobileNo ? panResult.result.mobileNo : null;
 
-                      if(record["parameter"] == 'name') {
-                          return true
-                      }else {
-                          return false
-                      }
-                  })
-                  if(filterData.length){
-                    if(filterData[0].matchScore >= 0.5){
-                        //res.send({ })
-                        req.body.current_page = "pan-verification";
-                        req.body.next_page = "cust-details";
-                        req.body.pan_name = panResult.result.name;
-                        req.body.target = "panDetails";
-                        req.body.email_id = panResult.result.emailId;
-                        req.body.mobile_no = panResult.result.mobileNo;
-
-                        return userService
-                          .findByIdAndUpdate(req.body)
-                          .then(
-                            (result) => {
-                              res.send({
-                                status: true,
-                                msg: "PAN details updated",
-                                data: result,
-                              });
-                            },
-                            (err) => {
-                              res.send({
-                                status: false,
-                                msg: "Invalid input details",
-                              });
-                            }
-                          )
-                          .catch((err) => {
-                            res.send({
-                              status: false,
-                              msg: "Unexpected Error",
-                            });
-                          });
-                    }else {
-                        res.send({
-                            status:false,
-                            msg:"Given name is incorrect"
-                        })
-                    }
-                  }
-                
-              } else {
+            return userService
+              .createUser(req.body)
+              .then(
+                (result) => {
+                  res.send({
+                    status: true,
+                    msg: "PAN details updated",
+                    data: result,
+                  });
+                },
+                (err) => {
+                  res.send({
+                    status: false,
+                    msg: "Invalid input details",
+                  });
+                }
+              )
+              .catch((err) => {
                 res.send({
                   status: false,
-                  msg: "Given PAN details are not matched with Aadhar",
-                  statusCode: body["status-code"],
+                  msg: "Unexpected Error",
                 });
-              }
-            }
-          );
-    }, err => {
-        res.send({ status: false,msg: "Invalid request details"})
-    }).catch(err => {
-        res.send({ status: false,msg: "something went wrong"})
-    })
+              });
+            // let filterData = records.filter(function(record){
+
+            //     if(record["parameter"] == 'name') {
+            //         return true
+            //     }else {
+            //         return false
+            //     }
+            // })
+            // if(filterData.length){
+            //   if(filterData[0].matchScore >= 0.5){
+            //       //res.send({ })
+            //       req.body.current_page = "pan-verification";
+            //       req.body.next_page = "aadhar-verification";
+            //       req.body.pan_name = panResult.result.name;
+            //      // req.body.target = "panDetails";
+            //       req.body.email_id = panResult.result.emailId;
+            //       req.body.mobile_no = panResult.result.mobileNo;
+
+            //       return userService
+            //         .createUser(req.body)
+            //         .then(
+            //           (result) => {
+            //             res.send({
+            //               status: true,
+            //               msg: "PAN details updated",
+            //               data: result,
+            //             });
+            //           },
+            //           (err) => {
+            //             res.send({
+            //               status: false,
+            //               msg: "Invalid input details",
+            //             });
+            //           }
+            //         )
+            //         .catch((err) => {
+            //           res.send({
+            //             status: false,
+            //             msg: "Unexpected Error",
+            //           });
+            //         });
+              // }else {
+              //     res.send({
+              //         status:false,
+              //         msg:"Given name is incorrect"
+              //     })
+              // }
+            // }
+          
+        } else {
+          res.send({
+            status: false,
+            msg: "Given PAN details are not matched with Aadhar",
+            statusCode: body["status-code"],
+          });
+        }
+      }
+    );
+   }).catch(err => {
+     res.send({status:false, msg:'Unexpected Error', data: {}})
+   })
+ 
 };
 
 userMaster.panVerification_v1 = (req, res) => {
@@ -377,27 +412,18 @@ userMaster.panVerification_v1 = (req, res) => {
             res.send({ status: false, msg: "Inavlid request details"})
         }).catch(err => {
             res.send({ status: false, msg:"Something went wrong"})
-        })
- 
-  
-
-  
+        }) 
 };
 
 userMaster.aadharVerification = function (req, res) {
+let reqObj = req.body;
+  if(!reqObj.name || !reqObj.aadhar_no){
+    res.send({ status: false, msg:"Name and Aadhar number required"});
+    return
+  }
   let currentTime = new Date().getTime().toString().substr(0, 10);
   let caseId = randomize("0", 6);
   console.log("req Obj", req.body);
-
-  return userService.findUser({ aadhar_no: req.body.aadhar_no }).then(
-    (result) => {
-      res.send({
-        status: false,
-        msg: "Aadhar number is already exists",
-        data: result,
-      });
-    },
-    (err) => {
       var options = {
         method: "POST",
         url: `${config.aadhar.CONSENT_API}`,
@@ -485,8 +511,7 @@ userMaster.aadharVerification = function (req, res) {
           }, 3000);
         }
       });
-    }
-  );
+  
 };
 
 
@@ -524,24 +549,25 @@ userMaster.aadharOTPVerification = function (req, res) {
     console.log(body);
     let reqobj = body;
     if (reqobj.statusCode == 101) {
+      req.body.id = req.body.id
       req.body.name = reqobj.result.dataFromAadhaar.name;
       req.body.email_id = reqobj.result.dataFromAadhaar.emailHash;
       req.body.mobile_no = reqobj.result.dataFromAadhaar.mobileHash;
-      (req.body.current_page = "aadhar-verification"),
-        (req.body.next_page = "pan-verification"),
-        (req.body.aadhar_no = req.body.aadhar_no),
-        (req.body.aadhar_details = reqobj.result.dataFromAadhaar);
+      req.body.current_page = "aadhar-verification";
+      req.body.next_page = "cust-details";
+      req.body.target = "aadhar-details";
+      //req.body.aadhar_no = req.body.aadhar_no,
+      req.body.aadhar_details = reqobj.result.dataFromAadhaar;
       return userService
-        .createUser(req.body)
+        .findByIdAndUpdate(req.body)
         .then(
           (resp) => {
             let responseObj = {};
             responseObj["_id"] = resp._id;
             responseObj["name"] = resp.name;
-            responseObj["created_at"] = resp.created_at;
             res.send({
               status: true,
-              msg: "User created successfully",
+              msg: "Aadhar details updated",
               data: responseObj,
             });
           },
@@ -823,10 +849,10 @@ userMaster.sanctionPdfDownload = (req, res) => {
     .then(
       (result) => {
         userData = result;
-        console.log('getUserById result',result.sanction_lettter_singned_url, result.sanction_lettter_url )
-        if(result.is_esigned || result.sanction_lettter_url){
+        console.log('getUserById result',result.sanction_letter_singned_url, result.sanction_letter_url )
+        if(result.is_esigned || result.sanction_letter_url){
           console.log('if')
-          let pdfUrl = result.sanction_lettter_singned_url ? result.sanction_lettter_singned_url : result.sanction_lettter_url;
+          let pdfUrl = result.sanction_letter_singned_url ? result.sanction_letter_singned_url : result.sanction_letter_url;
           res.send({
             status: true,
             msg: "sanction letter details",
@@ -960,6 +986,7 @@ userMaster.sanctionPdfDownload = (req, res) => {
 
 
 userMaster.sanctionAttachment = (req, res) => {
+  console.log('request deta', req.body);
   let id = req.body.id;
   //let id = "617ec47b8adea25838111388";
   let userData = null;
@@ -968,10 +995,10 @@ userMaster.sanctionAttachment = (req, res) => {
     .then(
       (result) => {
         userData = result;
-        console.log('getUserById result',result.sanction_lettter_singned_url, result.sanction_lettter_url )
-        if(result.is_esigned || result.sanction_lettter_url){
+        console.log('getUserById result',result.sanction_letter_singned_url, result.sanction_letter_url )
+        if(result.is_esigned || result.sanction_letter_url){
           console.log('if')
-          let pdfUrl = result.sanction_lettter_singned_url ? result.sanction_lettter_singned_url : result.sanction_lettter_url;
+          let pdfUrl = result.sanction_letter_singned_url ? result.sanction_letter_singned_url : result.sanction_letter_url;
           // res.send({
           //   status: true,
           //   msg: "sanction letter details",
@@ -1217,7 +1244,7 @@ userMaster.esignVerification = (req, res) => {
           // })
           var reqObj = {};
           reqObj['id'] = id;
-          reqObj['sanction_lettter_singned_url'] = filePath;
+          reqObj['sanction_letter_singned_url'] = filePath;
           reqObj['is_esigned'] = true;
           reqObj['target'] = 'sanction-letter-esign';
           return userService.findByIdAndUpdate(reqObj).then(resp => {
