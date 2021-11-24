@@ -45,6 +45,7 @@ router.delete('/user/:id', user.findByIdAndRemove);
 router.post('/bank/create', bank.addConfig);
 router.get('/bank/list', bank.getConfig);
 router.post('/bank/update', user.updateBankDetails);
+router.post('/bank/detail', user.getBankDetails);
 
 
 //Refernce API call

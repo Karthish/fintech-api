@@ -36,7 +36,25 @@ bankService.findAll = req => {
     })
 };
 
+bankService.findOne = function(req) {
+    //console.log('req',req);
+    return new Promise((resolve, reject) =>{
+		try{
+			bankModel.findOne(req, function(err, user) {
+			   // console.log('err',err)
+			   // console.log('user',user)
 
+				if(err || !user) {
+					return reject(err || 'No record found');
+				}else {
+					resolve(user);
+				}
+			})
+		} catch(err) {
+			return reject(err);
+		}
+	})
+};
 
 
 module.exports = bankService;

@@ -6,6 +6,7 @@ var randomize = require("randomatic");
 var request = require("request");
 var config = require("../config/config")[process.env.NODE_ENV || "dev"];
 var pdf = require('html-pdf');
+var bankService = require('../services/bankService');
 var userMaster = {};
 console.log('dirname', __dirname+'./');
 userMaster.testFunction = function (req, res) {
@@ -757,15 +758,28 @@ userMaster.updateUserDetails = (req, res) => {
 
 userMaster.updateBankDetails = (req, res) => {
   req.body.target = "bankDetails";
+  req.body.current_page = 'loan-offer-list';
+  req.body.nex_page= 'loan-offer-details';
   return userService
     .findByIdAndUpdate(req.body)
     .then(
       (result) => {
-        res.send({
+       
+        return bankService.findOne({_id:req.body.bank_ref_id}).then(result => {
+           res.send({
           status: true,
-          msg: "User details updated",
+          msg: "Bank details updated",
           data: result,
         });
+        }, err =>{
+          res.send({status:false, msg: err.message})
+        }).catch((err) => {
+          res.send({
+            status: false,
+            msg: "Unexpected Error",
+          });
+        });
+    
       },
       (err) => {
         res.send({
@@ -781,6 +795,23 @@ userMaster.updateBankDetails = (req, res) => {
       });
     });
 };
+
+userMaster.getBankDetails = (req, res) => {
+  return bankService.findOne({_id:req.body.bank_ref_id}).then(result => {
+    res.send({
+   status: true,
+   msg: "Bank details",
+   data: result,
+ });
+ }, err =>{
+   res.send({status:false, msg: err.message})
+ }).catch((err) => {
+   res.send({
+     status: false,
+     msg: "Unexpected Error",
+   });
+ });
+}
 
 userMaster.addOrUpdateReference = (req, res) => {
   req.body.target = "addReference";
