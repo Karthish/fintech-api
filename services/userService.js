@@ -226,7 +226,7 @@ userMaster.findByIdAndUpdate = req => {
             }else if(req.target == 'bankDetails'){
                 query = {$set: { "bank_ref_id": req.bank_ref_id }}
             }else if(req.target == 'payslipUpload'){
-                query = {$set: { "payslip_documents": req.files }}
+                query = {$set: req}
             } else if(req.target == 'updateUser') {
                 query = {$set: req};
             } else if(req.target == 'sanction-letter-upload'){

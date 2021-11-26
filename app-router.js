@@ -126,7 +126,7 @@ router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
               if(ResponseData.length == file.length){
                 var reqObj = {};
                 reqObj['id'] =  req.params.id;
-                reqObj['files'] = ResponseData;
+                reqObj['payslip_documents'] = ResponseData.files;
                 reqObj['target'] = 'payslipUpload';
                 reqObj['current_page'] = 'cust-details';
                 reqObj['next_page'] = 'loan-offer-list';

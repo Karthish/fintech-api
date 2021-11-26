@@ -574,7 +574,7 @@ userMaster.aadharOTPVerification = function (req, res) {
           },
           (err) => {
             res.send({
-              status: true,
+              status: false,
               data: {},
               msg: "Invalid Request",
             });
@@ -1026,10 +1026,10 @@ userMaster.sanctionAttachment = (req, res) => {
     .then(
       (result) => {
         userData = result;
-        console.log('getUserById result',result.sanction_letter_singned_url, result.sanction_letter_url )
-        if(result.is_esigned || result.sanction_letter_url){
-          console.log('if')
-          let pdfUrl = result.sanction_letter_singned_url ? result.sanction_letter_singned_url : result.sanction_letter_url;
+        console.log('getUserById result',result)
+        //if(result.is_esigned || result.sanction_letter_url){
+          //console.log('if')
+          //let pdfUrl = result.sanction_letter_singned_url ? result.sanction_letter_singned_url : result.sanction_letter_url;
           // res.send({
           //   status: true,
           //   msg: "sanction letter details",
@@ -1145,9 +1145,7 @@ userMaster.sanctionAttachment = (req, res) => {
           }, err => {
             res.send({ status:false, msg: err.message})
           }).catch(err => {res.send({ status:false, msg: err.message})})
-        } else {
-           console.log('user details not found');
-        }
+        //} 
         
       },
       (err) => {
@@ -1272,7 +1270,7 @@ userMaster.esignVerification = (req, res) => {
           reqObj['is_esigned'] = true;
           reqObj['target'] = 'sanction-letter-esign';
           return userService.findByIdAndUpdate(reqObj).then(resp => {
-          res.json({ "status": true, "Message": "Sanction Letter details", data: filePath});
+          res.json({ "status": true, "msg": "E-Sign verification completed successfully", data: filePath});
           }, err => {
             res.send({ "status": false, msg: err.message });
           }).catch(err => {
