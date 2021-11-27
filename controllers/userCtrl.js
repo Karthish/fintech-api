@@ -895,9 +895,8 @@ userMaster.sanctionPdfDownload = (req, res) => {
           <head>
           <title>Sanction Letter</title></head>
           <body>
-          <button class="btn btn-success btn-block">E-Sign PDF</button>
           <div id="sanctionLetter_pdfData" class="p-5" style="font-size: 1.2rem;font-family: 'regular_font', sans-serif!important;padding:20px">
-          <div class="date mb-3">31-10-2021</div>
+          <div class="date mb-3">${new Date().toLocaleDateString()}</div>
           <ul class="address" style="list-style-type: none;padding: 0;">
               <li>Company Name:  ${userData.organization_name ? userData.organization_name: '-' }</li>
               <li>Address Line: ${userData.aadhar_details.address.combinedAddress}</li>
@@ -910,12 +909,12 @@ userMaster.sanctionPdfDownload = (req, res) => {
           <table class="mt-3 mb-3">
               <tbody>
                   <tr>
-                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER</h4></td>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER ${userData.name ? userData.name: '-' }</h4></td>
                       <td>COMPANY NAME</td>
                   </tr>
                   <tr>
                       <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">AMOUNT</h4></td>
-                      <td>$</td>
+                      <td>$ ${userData.desired_fund_amount ? userData.desired_fund_amount: '-' }</td>
                   </tr>
                   <tr>
                       <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">RATE (%)</h4></td>
@@ -1037,80 +1036,87 @@ userMaster.sanctionAttachment = (req, res) => {
           // });
 
           console.log('else')
-          var html = `
-                          <!doctype html>
-                          <html lang="en">
-                          
-                          <head>
-                            <title>Sanction Letter</title>
-                          </head>
-                          
-                          <body>
-                            <div id="sanctionLetter_pdfData" class="p-5" style="font-size: 0.8rem;font-family: 'regular_font', sans-serif!important;padding: 25px;">
-                              <div class="date mb-3">31-10-2021</div>
-                              <ul class="address" style="list-style-type: none;padding: 0;margin: 10px 0;">
-                                <li>Company Name: ${userData.organization_name ? userData.organization_name: '-' }</li>
-                                <li>Address Line: ${userData.aadhar_details.address.combinedAddress}</li>
-                              </ul>
-                              <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;margin: 15px 0 15px;">Congralations!</h4>
-                              <p style="margin: 0px 0 15px;"> We are pleased to inform you that, after evaluating your request, Bank Name has approved the following term loan subject to conditions detailed below: </p>
-                              <table style="margin-top: 25px;">
-                                <tbody>
-                                  <tr>
-                                    <td style="min-width: 25vw;">
-                                      <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;">BORROWER</h4></td>
-                                    <td>COMPANY NAME</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="min-width: 25vw;">
-                                      <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;">AMOUNT</h4></td>
-                                    <td>$</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="min-width: 25vw;">
-                                      <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;">RATE (%)</h4></td>
-                                    <td>%</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="min-width: 25vw;">
-                                      <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;">LATE CHARGES (%)</h4></td>
-                                    <td>5.00</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="min-width: 25vw;">
-                                      <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;">DEFAULT RATE (%)</h4></td>
-                                    <td>2.00</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="min-width: 25vw;">
-                                      <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;">PREPAYMENT PENALTY (%)</h4></td>
-                                    <td>3.00</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="min-width: 25vw;">
-                                      <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;">REPAYMENT</h4></td>
-                                    <td> This term loan will be repaid by 59 consecutive monthly payments of principal and interest of $, with a final payment (60) of $plus any accured interest and/or late charges accumulated, if applicable. </td>
-                                  </tr>
-                                  <tr>
-                                    <td style="min-width: 25vw;">
-                                      <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;">PERSONAL GUARANTEE</h4></td>
-                                    <td>
-                                      <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;">INCLUDE DETAILS AS IN APPLICATION</h4> </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                              <p style="margin: 10px 0;"> This approval is subject to additional validations and delivery of business documents. In addition, if you have an existing commercial credit relationship with us the approval will be subject to verification of payment and financial performance of those credit facilities. </p>
-                              <p style="margin: 10px 0;"> This commitment is subject to the preparation, execution, and delivery of documentation in the form and substance satisfactory to Bank Name, in which, in addition to substantially incorporating the terms and conditions set forth above, other terms and conditions will be included as necessary for this type of transaction. </p>
-                              <p style="margin: 10px 0;">Please evidence your approval of the foregoing by consenting this commitment letter.</p>
-                              <h4 style="font-size: 0.7rem;font-family: 'semi_bold', sans-serif!important;">This offer expires in 10 days.</h4>
-                              <div style="display: flex;align-items: center;justify-content: space-between;">
-                                <div> concent </div>
-                                <div> Date </div>
-                              </div>
-                            </div>
-                          </body>
-                          
-                          </html>`;
+          var html = `<!doctype html> <html lang="en">
+          <head>
+          <title>Sanction Letter</title></head>
+          <body>
+          <div id="sanctionLetter_pdfData" class="p-5" style="font-size: 1.2rem;font-family: 'regular_font', sans-serif!important;padding:20px">
+          <div class="date mb-3">${new Date().toLocaleDateString()}</div>
+          <ul class="address" style="list-style-type: none;padding: 0;">
+              <li>Company Name:  ${userData.organization_name ? userData.organization_name: '-' }</li>
+              <li>Address Line: ${userData.aadhar_details.address.combinedAddress}</li>
+          </ul>
+          <h4 class="mt-3" style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">Congralations!</h4>
+          <p>
+              We are pleased to inform you that, after evaluating your request, Bank Name has approved the following term loan 
+              subject to conditions detailed below:
+          </p>
+          <table class="mt-3 mb-3">
+              <tbody>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER ${userData.name ? userData.name: '-' }</h4></td>
+                      <td>COMPANY NAME</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">AMOUNT</h4></td>
+                      <td>$ ${userData.desired_fund_amount ? userData.desired_fund_amount: '-' }</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">RATE (%)</h4></td>
+                      <td>%</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">LATE CHARGES (%)</h4></td>
+                      <td>5.00</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">DEFAULT RATE (%)</h4></td>
+                      <td>2.00</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">PREPAYMENT PENALTY (%)</h4></td>
+                      <td>3.00</td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">REPAYMENT</h4></td>
+                      <td>
+                          This term loan will be repaid by 59 consecutive monthly payments of principal and interest of 
+                          $, with a final payment (60) of $plus any accured interest and/or late charges accumulated, 
+                          if applicable.
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">PERSONAL GUARANTEE</h4></td>
+                      <td>
+                          <h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">INCLUDE DETAILS AS IN APPLICATION</h4>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+          <p>
+              This approval is subject to additional validations and delivery of business documents. In addition, if you have 
+              an existing commercial credit relationship with us the approval will be subject to verification of payment and 
+              financial performance of those credit facilities.
+          </p>
+          <p>
+              This commitment is subject to the preparation, execution, and delivery of documentation in the form and substance 
+              satisfactory to Bank Name, in which, in addition to substantially incorporating the terms and conditions set forth above,
+              other terms and conditions will be included as necessary for this type of transaction.
+          </p>
+          <p>Please evidence your approval of the foregoing by consenting this commitment letter.</p>
+          <h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">This offer expires in 10 days.</h4>
+
+          <div class="d-flex justify-content-between mt-4">
+              <div>
+                  concent
+              </div>
+              <div>
+                  Date
+              </div>
+          </div>
+          </div>
+          </body>
+          </html>`;
                     
 
           return common.createPdf(html,'').then(response => {
@@ -1177,9 +1183,8 @@ userMaster.esignVerification = (req, res) => {
         <head>
         <title>Sanction Letter</title></head>
         <body>
-        <div style="text-align:center;font-size: 16px"><button class="btn btn-success btn-block" style="background-color:#1a8917;color: #ffffff;border-radius:10px">E-Sign Verififed</button></div>
         <div id="sanctionLetter_pdfData" class="p-5" style="font-size: 1.2rem;font-family: 'regular_font', sans-serif!important;padding:20px">
-        <div class="date mb-3">31-10-2021</div>
+        <div class="date mb-3">${new Date().toLocaleDateString()}</div>
         <ul class="address" style="list-style-type: none;padding: 0;">
             <li>Company Name:  ${userData.organization_name ? userData.organization_name: '-' }</li>
             <li>Address Line: ${userData.aadhar_details.address.combinedAddress}</li>
@@ -1192,12 +1197,12 @@ userMaster.esignVerification = (req, res) => {
         <table class="mt-3 mb-3">
             <tbody>
                 <tr>
-                    <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER</h4></td>
+                    <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER ${userData.name ? userData.name: '-' }</h4></td>
                     <td>COMPANY NAME</td>
                 </tr>
                 <tr>
                     <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">AMOUNT</h4></td>
-                    <td>$</td>
+                    <td>$ ${userData.desired_fund_amount ? userData.desired_fund_amount: '-' }</td>
                 </tr>
                 <tr>
                     <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">RATE (%)</h4></td>
@@ -1246,11 +1251,13 @@ userMaster.esignVerification = (req, res) => {
 
         <div class="d-flex justify-content-between mt-4">
             <div>
-                ${userData.name}
+                <p>Digitally Signed by: ${userData.name ? userData.name: '-' } </p>
+                <p>Reason: 'Approving the document' </p>
+                <p>Location: 'Bangloare, India' </p>
+                <p>ContactInfo: ${userData.email_id ? userData.email_id : '-' } </p>
+                <p>Date: ${new Date().toLocaleDateString()} </p>
             </div>
-            <div>
-                ${new Date().toLocaleDateString()}
-            </div>
+           
         </div>
         </div>
         </body>
