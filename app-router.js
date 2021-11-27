@@ -120,7 +120,7 @@ router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
     };
   s3bucket.upload(params, function (err, data) {
           if (err) {
-           res.json({ "status": false, "Message": err});
+           res.json({ "status": false, "msg": err});
           }else{
               ResponseData.push(data);
               if(ResponseData.length == file.length){
@@ -131,7 +131,7 @@ router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
                 reqObj['current_page'] = 'cust-details';
                 reqObj['next_page'] = 'loan-offer-list';
                 userService.findByIdAndUpdate(reqObj).then(resp => {
-                res.json({ "status": true, "Message": "File Uploaded SuceesFully", data: ResponseData});
+                res.json({ "status": true, "msg": "File Uploaded SuceesFully", data: ResponseData});
                 }, err => {
                   res.send({ "status": false, msg: err.message });
                 }).catch(err => {
