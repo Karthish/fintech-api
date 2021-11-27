@@ -224,7 +224,7 @@ userMaster.findByIdAndUpdate = req => {
             }else if(req.target == 'customerDetails') {
                 query = {$set: req};
             }else if(req.target == 'bankDetails'){
-                query = {$set: { "bank_ref_id": req.bank_ref_id }}
+                query = {$set: req}
             }else if(req.target == 'payslipUpload'){
                 query = {$set: req}
             } else if(req.target == 'updateUser') {

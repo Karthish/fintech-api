@@ -759,7 +759,7 @@ userMaster.updateUserDetails = (req, res) => {
 userMaster.updateBankDetails = (req, res) => {
   req.body.target = "bankDetails";
   req.body.current_page = 'loan-offer-list';
-  req.body.nex_page= 'loan-offer-details';
+  req.body.next_page= 'loan-offer-details';
   return userService
     .findByIdAndUpdate(req.body)
     .then(
