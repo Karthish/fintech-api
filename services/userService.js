@@ -8,7 +8,7 @@ userMaster.findOne = function(req) {
     //console.log('req',req);
     return new Promise((resolve, reject) =>{
 		try{
-			userModel.findOne(req, function(err, user) {
+			custModal.findOne(req, function(err, user) {
 			   // console.log('err',err)
 			   // console.log('user',user)
 
