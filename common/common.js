@@ -87,6 +87,7 @@ common.fileUpload = function(files, path){
 };
 
 common.createPdf = function(req, option) {
+	console.log('enter createPdf', req);
 	return new Promise((resolve, reject)=> {
 		
 		pdf.create(req, option).toStream(function(err, stream){

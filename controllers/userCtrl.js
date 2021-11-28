@@ -880,7 +880,7 @@ userMaster.sanctionPdfDownload = (req, res) => {
     .then(
       (result) => {
         userData = result;
-        console.log('getUserById result',result.sanction_letter_singned_url, result.sanction_letter_url )
+        console.log('getUserById result',result)
         if(result.is_esigned || result.sanction_letter_url){
           console.log('if')
           let pdfUrl = result.sanction_letter_singned_url ? result.sanction_letter_singned_url : result.sanction_letter_url;
@@ -899,7 +899,7 @@ userMaster.sanctionPdfDownload = (req, res) => {
           <div class="date mb-3">${new Date().toLocaleDateString()}</div>
           <ul class="address" style="list-style-type: none;padding: 0;">
               <li>Company Name:  ${userData.organization_name ? userData.organization_name: '-' }</li>
-              <li>Address Line: ${userData.aadhar_details.address.combinedAddress}</li>
+              <li>Address Line: ${(userData.aadhar_details ? (userData.aadhar_details.address.combinedAddress ? userData.aadhar_details.address.combinedAddress: '-') : '-') }</li>
           </ul>
           <h4 class="mt-3" style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">Congralations!</h4>
           <p>
@@ -973,6 +973,7 @@ userMaster.sanctionPdfDownload = (req, res) => {
           </body>
           </html>`;
 
+          console.log('enter here')
           return common.createPdf(html,'').then(response => {
             console.log('uploaded file path', response);
             let filePath = response.Location;
@@ -1044,7 +1045,7 @@ userMaster.sanctionAttachment = (req, res) => {
           <div class="date mb-3">${new Date().toLocaleDateString()}</div>
           <ul class="address" style="list-style-type: none;padding: 0;">
               <li>Company Name:  ${userData.organization_name ? userData.organization_name: '-' }</li>
-              <li>Address Line: ${userData.aadhar_details.address.combinedAddress}</li>
+              <li>Address Line: ${(userData.aadhar_details ? (userData.aadhar_details.address.combinedAddress ? userData.aadhar_details.address.combinedAddress: '-') : '-') }</li>
           </ul>
           <h4 class="mt-3" style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">Congralations!</h4>
           <p>
@@ -1187,8 +1188,8 @@ userMaster.esignVerification = (req, res) => {
         <div class="date mb-3">${new Date().toLocaleDateString()}</div>
         <ul class="address" style="list-style-type: none;padding: 0;">
             <li>Company Name:  ${userData.organization_name ? userData.organization_name: '-' }</li>
-            <li>Address Line: ${userData.aadhar_details.address.combinedAddress}</li>
-        </ul>
+            <li>Address Line: ${(userData.aadhar_details ? (userData.aadhar_details.address.combinedAddress ? userData.aadhar_details.address.combinedAddress: '-') : '-') }</li>
+            </ul>
         <h4 class="mt-3" style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">Congralations!</h4>
         <p>
             We are pleased to inform you that, after evaluating your request, Bank Name has approved the following term loan 
