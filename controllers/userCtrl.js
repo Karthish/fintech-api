@@ -908,14 +908,14 @@ userMaster.sanctionPdfDownload = (req, res) => {
           </p>
           <table class="mt-3 mb-3">
               <tbody>
-                  <tr>
-                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER ${userData.name ? userData.name: '-' }</h4></td>
-                      <td>COMPANY NAME</td>
-                  </tr>
-                  <tr>
-                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">AMOUNT</h4></td>
-                      <td>$ ${userData.desired_fund_amount ? userData.desired_fund_amount: '-' }</td>
-                  </tr>
+              <tr>
+                 <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER: </h4></td>
+                  <td>${userData.name ? userData.name: '-' }</td>
+              </tr>
+               <tr>
+                  <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">COMPANY NAME: </h4></td>
+                  <td> -</td>
+                </tr>
                   <tr>
                       <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">RATE (%)</h4></td>
                       <td>%</td>
@@ -983,7 +983,7 @@ userMaster.sanctionPdfDownload = (req, res) => {
             // })
             var reqObj = {};
             reqObj['id'] = id;
-            reqObj['sanction_lettter_url'] = filePath;
+            reqObj['sanction_letter_url'] = filePath;
             reqObj['target'] = 'sanction-letter-upload';
             return userService.findByIdAndUpdate(reqObj).then(resp => {
             res.json({ "status": true, "Message": "Sanction Letter details", data: filePath});
@@ -1053,14 +1053,14 @@ userMaster.sanctionAttachment = (req, res) => {
           </p>
           <table class="mt-3 mb-3">
               <tbody>
-                  <tr>
-                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER ${userData.name ? userData.name: '-' }</h4></td>
-                      <td>COMPANY NAME</td>
-                  </tr>
-                  <tr>
-                      <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">AMOUNT</h4></td>
-                      <td>$ ${userData.desired_fund_amount ? userData.desired_fund_amount: '-' }</td>
-                  </tr>
+              <tr>
+                <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER: </h4></td>
+                <td>${userData.name ? userData.name: '-' }</td>
+              </tr>
+              <tr>
+                 <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">COMPANY NAME: </h4></td>
+                  <td> -</td>
+              </tr>
                   <tr>
                       <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">RATE (%)</h4></td>
                       <td>%</td>
@@ -1130,7 +1130,7 @@ userMaster.sanctionAttachment = (req, res) => {
             // })
             var reqObj = {};
             reqObj['id'] = id;
-            reqObj['sanction_lettter_url'] = filePath;
+            reqObj['sanction_letter_url'] = filePath;
             reqObj['target'] = 'sanction-letter-upload';
             return userService.findByIdAndUpdate(reqObj).then(resp => {
               let obj = {};
@@ -1197,8 +1197,12 @@ userMaster.esignVerification = (req, res) => {
         <table class="mt-3 mb-3">
             <tbody>
                 <tr>
-                    <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER ${userData.name ? userData.name: '-' }</h4></td>
-                    <td>COMPANY NAME</td>
+                    <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">BORROWER: </h4></td>
+                    <td>${userData.name ? userData.name: '-' }</td>
+                </tr>
+                <tr>
+                    <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">COMPANY NAME: </h4></td>
+                    <td> -</td>
                 </tr>
                 <tr>
                     <td style="min-width: 25vw;"><h4 style="font-size: 1.1rem;font-family: 'semi_bold', sans-serif!important;">AMOUNT</h4></td>
@@ -1254,7 +1258,7 @@ userMaster.esignVerification = (req, res) => {
                 <p>Digitally Signed by: ${userData.name ? userData.name: '-' } </p>
                 <p>Reason: 'Approving the document' </p>
                 <p>Location: 'Bangloare, India' </p>
-                <p>ContactInfo: ${userData.email_id ? userData.email_id : '-' } </p>
+                <p>ContactInfo: '-' </p>
                 <p>Date: ${new Date().toLocaleDateString()} </p>
             </div>
            

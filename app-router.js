@@ -123,13 +123,15 @@ router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
            res.json({ "status": false, "msg": err});
           }else{
               ResponseData.push(data);
+              console.log('uploaded files', ResponseData);
               if(ResponseData.length == file.length){
                 var reqObj = {};
                 reqObj['id'] =  req.params.id;
-                reqObj['payslip_documents'] = ResponseData.files;
+                reqObj['payslip_documents'] = ResponseData;
                 reqObj['target'] = 'payslipUpload';
                 reqObj['current_page'] = 'cust-details';
                 reqObj['next_page'] = 'loan-offer-list';
+                console.log('reqObj for update', reqObj);
                 userService.findByIdAndUpdate(reqObj).then(resp => {
                 res.json({ "status": true, "msg": "File Uploaded SuceesFully", data: ResponseData});
                 }, err => {
