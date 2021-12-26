@@ -233,6 +233,8 @@ userMaster.findByIdAndUpdate = req => {
                 query = {$set: req}; 
             } else if(req.target == 'sanction-letter-esign'){
                 query = {$set: req}; 
+            } else if(req.target == 'postEsign'){
+                query = {$set: req}; 
             }
 
             console.log('req', req);
