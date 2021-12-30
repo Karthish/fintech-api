@@ -204,7 +204,7 @@ router.post('/cancelledcheck/upload', cancelledChequeUpload, function(req, res){
                 reqObj['next_page'] = 'post-esign';
                 console.log('reqObj for update', reqObj);
                 userService.findByIdAndUpdate(reqObj).then(resp => {
-                res.json({ "status": true, "msg": "File Uploaded SuceesFully", data: ResponseData});
+                res.json({ "status": true, "msg": "Cancelled Cheque Uploaded SuceesFully", data: ResponseData});
                 }, err => {
                   res.send({ "status": false, msg: err.message });
                 }).catch(err => {
@@ -257,7 +257,7 @@ router.post('/empId/upload', empIdUpload, function(req, res){
                 reqObj['next_page'] = 'post-esign';
                 console.log('reqObj for update', reqObj);
                 userService.findByIdAndUpdate(reqObj).then(resp => {
-                res.json({ "status": true, "msg": "File Uploaded SuceesFully", data: ResponseData});
+                res.json({ "status": true, "msg": "Employee ID Uploaded SuceesFully", data: ResponseData});
                 }, err => {
                   res.send({ "status": false, msg: err.message });
                 }).catch(err => {
@@ -310,7 +310,7 @@ router.post('/bankstatement/upload', bankstatement, function(req, res){
                 reqObj['next_page'] = 'dashboard';
                 console.log('reqObj for update', reqObj);
                 userService.findByIdAndUpdate(reqObj).then(resp => {
-                res.json({ "status": true, "msg": "File Uploaded SuceesFully", data: ResponseData});
+                res.json({ "status": true, "msg": "Bank Statemnet Uploaded SuceesFully", data: ResponseData});
                 }, err => {
                   res.send({ "status": false, msg: err.message });
                 }).catch(err => {
