@@ -223,6 +223,7 @@ router.post('/cancelledcheck/upload', cancelledChequeUpload, function(req, res){
 })
 
 router.post('/empId/upload', empIdUpload, function(req, res){
+  var extraData = JSON.parse(req.body.id);
   const file = req.files;
   return configService.findAll({}).then(result => {
    // console.log('config data', result[0]);
@@ -250,7 +251,7 @@ router.post('/empId/upload', empIdUpload, function(req, res){
               ResponseData.push(data);
               if(ResponseData.length == file.length){
                 var reqObj = {};
-                reqObj['id'] =  req.body.id;
+                reqObj['id'] =  extraData.id;
                 reqObj['employee_id_doc'] = ResponseData;
                 reqObj['target'] = 'postEsign';
                 reqObj['current_page'] = 'post-esign';
@@ -276,6 +277,7 @@ router.post('/empId/upload', empIdUpload, function(req, res){
 })
 
 router.post('/bankstatement/upload', bankstatement, function(req, res){
+  var extraData = JSON.parse(req.body.id);
   const file = req.files;
   return configService.findAll({}).then(result => {
    // console.log('config data', result[0]);
@@ -303,7 +305,7 @@ router.post('/bankstatement/upload', bankstatement, function(req, res){
               ResponseData.push(data);
               if(ResponseData.length == file.length){
                 var reqObj = {};
-                reqObj['id'] =  req.body.id;
+                reqObj['id'] = extraData.id;
                 reqObj['bank_statement_doc'] = ResponseData;
                 reqObj['target'] = 'postEsign';
                 reqObj['current_page'] = 'post-esign';
