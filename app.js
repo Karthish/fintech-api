@@ -1,12 +1,12 @@
 const express = require("express");
 var cors = require("cors");
 const app = express();
-// app.use(cors({
-//   origin: ['http://localhost:4500', 'http://dvqxj9lu947gx.cloudfront.net','https://dvqxj9lu947gx.cloudfront.net','https://aryaa-filecontianer-dev.s3.ap-south-1.amazonaws.com']
-// }));
 app.use(cors({
-  origin: '*'
+  origin: ['http://localhost:4500', 'http://dvqxj9lu947gx.cloudfront.net','https://dvqxj9lu947gx.cloudfront.net','https://aryaa-filecontianer-dev.s3.ap-south-1.amazonaws.com']
 }));
+// app.use(cors({
+//   origin: '*'
+// }));
 var multer = require('multer');
 const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
