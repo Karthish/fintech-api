@@ -8,4 +8,4 @@ var loanSubCategorySchema = new Schema({
     loan_ref_id: {type: Schema.ObjectId, ref:"loan"}
 })
 
-module.exports = mongoose.model("loanSubCategory", loanSubCategorySchema)
+module.exports = mongoose.model("loanSubCategories", loanSubCategorySchema)

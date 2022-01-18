@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 //var employee = require('../models/employeeModel');
 var loan = require('../models/loanModel');
 var bank = require('../models/bankModel');
-var subcategory = require('../models/subcategoryModel');
+var subcategory = require('../models/loanSubCategoryModel');
 var customerSchema = new Schema({
     name                : {type: String},
     email_id            : {type: String},
