@@ -1309,6 +1309,43 @@ userMaster.esignVerification = (req, res) => {
 
 };
 
+userMaster.updateDashboard = (req, res) => {
+  req.body.target = "dashboard";
+  return userService.findByIdAndUpdate(req.body).then(result => {
+    res.send({ status: true, msg:"dashboard details updated successfully", data: result });
+  }, err => {
+    res.send({ status: false, msg:"Invalid Input"})
+  }).catch((err) => {
+    res.send({ status: false, msg:"Unexpected Error",})
+  })
+}
+userMaster.getDashboard = (req, res) => {
+  let id = req.params.id;
+  return userService
+  .getUserById({ _id: id })
+  .then(
+    (result) => {
+      res.send({
+        status: true,
+        msg: "User details found",
+        data: result,
+      });
+    },
+    (err) => {
+      res.send({
+        status: false,
+        msg: "Invalid user details",
+      });
+    }
+  )
+  .catch((err) => {
+    res.send({
+      status: false,
+      msg: "Unexpected Error",
+    });
+  });
+}
+
 
 
 module.exports = userMaster;

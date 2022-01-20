@@ -66,6 +66,8 @@ router.post('/user/sanction/attachment', user.sanctionAttachment);
 
 router.post('/user/sanction/esign', user.esignVerification);
 
+router.post('/user/dashboard/update', user.updateDashboard);
+router.get('/user/dashboard/:id', user.getDashboard);
 
 //Payslip Upload API
 var storage = multer.memoryStorage({
