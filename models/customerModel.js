@@ -60,6 +60,7 @@ var customerSchema = new Schema({
     previous_emi_amount : {type: String},
     current_due_status : {type: String},
     previous_due_status : {type: String},
+    office_pin_code : { type: Number}
 
 });
 

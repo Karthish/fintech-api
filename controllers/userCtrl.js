@@ -181,96 +181,101 @@ let userObj;
         console.log("error:", err);
         //console.error('httpResponse:', httpResponse);
         let panResult = JSON.parse(body);
-        console.log("panResult type:", typeof(panResult));
-        console.log("panResult :", JSON.stringify(panResult));
-        if (panResult.statusCode == 101 ||  panResult.statusCode == '101') {
-            let records = panResult.result.profileMatch;
-            req.body.current_page = "pan-verification";
-            req.body.next_page = "aadhar-verification";
-            req.body.pan_name = panResult.result.name;
-           // req.body.target = "panDetails";
-            req.body.email_id = panResult.result.emailId ? panResult.result.emailId : null ;
-            req.body.mobile_no = panResult.result.mobileNo ? panResult.result.mobileNo : null;
+        res.send({
+          status:true,
+          data: panResult,
+          msg:"pan response"
+        })
+        //console.log("panResult type:", typeof(panResult));
+       // console.log("panResult :", JSON.stringify(panResult));
+        // if (panResult.statusCode == 101 ||  panResult.statusCode == '101') {
+        //     let records = panResult.result.profileMatch;
+        //     req.body.current_page = "pan-verification";
+        //     req.body.next_page = "aadhar-verification";
+        //     req.body.pan_name = panResult.result.name;
+        //    // req.body.target = "panDetails";
+        //     req.body.email_id = panResult.result.emailId ? panResult.result.emailId : null ;
+        //     req.body.mobile_no = panResult.result.mobileNo ? panResult.result.mobileNo : null;
 
-            return userService
-              .createUser(req.body)
-              .then(
-                (result) => {
-                  res.send({
-                    status: true,
-                    msg: "PAN details updated",
-                    data: result,
-                  });
-                },
-                (err) => {
-                  res.send({
-                    status: false,
-                    msg: "Invalid input details",
-                  });
-                }
-              )
-              .catch((err) => {
-                res.send({
-                  status: false,
-                  msg: "Unexpected Error",
-                });
-              });
-            // let filterData = records.filter(function(record){
+        //     return userService
+        //       .createUser(req.body)
+        //       .then(
+        //         (result) => {
+        //           res.send({
+        //             status: true,
+        //             msg: "PAN details updated",
+        //             data: result,
+        //           });
+        //         },
+        //         (err) => {
+        //           res.send({
+        //             status: false,
+        //             msg: "Invalid input details",
+        //           });
+        //         }
+        //       )
+        //       .catch((err) => {
+        //         res.send({
+        //           status: false,
+        //           msg: "Unexpected Error",
+        //         });
+        //       });
+        //     // let filterData = records.filter(function(record){
 
-            //     if(record["parameter"] == 'name') {
-            //         return true
-            //     }else {
-            //         return false
-            //     }
-            // })
-            // if(filterData.length){
-            //   if(filterData[0].matchScore >= 0.5){
-            //       //res.send({ })
-            //       req.body.current_page = "pan-verification";
-            //       req.body.next_page = "aadhar-verification";
-            //       req.body.pan_name = panResult.result.name;
-            //      // req.body.target = "panDetails";
-            //       req.body.email_id = panResult.result.emailId;
-            //       req.body.mobile_no = panResult.result.mobileNo;
+        //     //     if(record["parameter"] == 'name') {
+        //     //         return true
+        //     //     }else {
+        //     //         return false
+        //     //     }
+        //     // })
+        //     // if(filterData.length){
+        //     //   if(filterData[0].matchScore >= 0.5){
+        //     //       //res.send({ })
+        //     //       req.body.current_page = "pan-verification";
+        //     //       req.body.next_page = "aadhar-verification";
+        //     //       req.body.pan_name = panResult.result.name;
+        //     //      // req.body.target = "panDetails";
+        //     //       req.body.email_id = panResult.result.emailId;
+        //     //       req.body.mobile_no = panResult.result.mobileNo;
 
-            //       return userService
-            //         .createUser(req.body)
-            //         .then(
-            //           (result) => {
-            //             res.send({
-            //               status: true,
-            //               msg: "PAN details updated",
-            //               data: result,
-            //             });
-            //           },
-            //           (err) => {
-            //             res.send({
-            //               status: false,
-            //               msg: "Invalid input details",
-            //             });
-            //           }
-            //         )
-            //         .catch((err) => {
-            //           res.send({
-            //             status: false,
-            //             msg: "Unexpected Error",
-            //           });
-            //         });
-              // }else {
-              //     res.send({
-              //         status:false,
-              //         msg:"Given name is incorrect"
-              //     })
-              // }
-            // }
+        //     //       return userService
+        //     //         .createUser(req.body)
+        //     //         .then(
+        //     //           (result) => {
+        //     //             res.send({
+        //     //               status: true,
+        //     //               msg: "PAN details updated",
+        //     //               data: result,
+        //     //             });
+        //     //           },
+        //     //           (err) => {
+        //     //             res.send({
+        //     //               status: false,
+        //     //               msg: "Invalid input details",
+        //     //             });
+        //     //           }
+        //     //         )
+        //     //         .catch((err) => {
+        //     //           res.send({
+        //     //             status: false,
+        //     //             msg: "Unexpected Error",
+        //     //           });
+        //     //         });
+        //       // }else {
+        //       //     res.send({
+        //       //         status:false,
+        //       //         msg:"Given name is incorrect"
+        //       //     })
+        //       // }
+        //     // }
           
-        } else {
-          res.send({
-            status: false,
-            msg: "Given PAN details are not matched with Aadhar",
-            statusCode: body["status-code"],
-          });
-        }
+        // } else {
+        //   res.send({
+        //     status: false,
+        //     msg: "Given PAN details are not matched with Aadhar",
+        //     statusCode: body["status-code"],
+        //   });
+        // }
       }
     );
    }).catch(err => {
@@ -418,13 +423,15 @@ userMaster.panVerification_v1 = (req, res) => {
 
 userMaster.aadharVerification = function (req, res) {
 let reqObj = req.body;
-  if(!reqObj.name || !reqObj.aadhar_no){
-    res.send({ status: false, msg:"Name and Aadhar number required"});
+console.log("req Obj", reqObj);
+  if( !reqObj.aadhar_no){
+    res.send({ status: false, msg:"Aadhar number required"});
     return
   }
+  //return userService.findOne({_id:reqObj.id}).then(result => {
   let currentTime = new Date().getTime().toString().substr(0, 10);
   let caseId = randomize("0", 6);
-  console.log("req Obj", req.body);
+ 
       var options = {
         method: "POST",
         url: `${config.aadhar.CONSENT_API}`,
@@ -437,7 +444,7 @@ let reqObj = req.body;
           userAgent:
             "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0",
           consent: "Y",
-          name: req.body.name,
+          name: reqObj.pan_name ? reqObj.pan_name : '',
           consentTime: currentTime,
           consentText: "Consent accepted",
           clientData: { caseId: caseId },
@@ -512,11 +519,20 @@ let reqObj = req.body;
           }, 3000);
         }
       });
-  
+    // },
+    //  err => {res.send({status:false, msg: "Inavalid request"})})
+    //  .catch((err) => {
+    //   res.send({
+    //     status: true,
+    //     data: {},
+    //     msg: "somthing went wrong",
+    //   });
+    // });
 };
 
 
 userMaster.aadharOTPVerification = function (req, res) {
+  let aadharResponseObj;
   let shareCode = randomize("0", 4);
   console.log("aadharOTPVerification req obj:", req.body);
   var options = {
@@ -548,17 +564,126 @@ userMaster.aadharOTPVerification = function (req, res) {
       "+++++++++++++++++++++++++ aadhaar download response obj ++++++++++++++++++++++++++++++"
     );
     console.log(body);
-    let reqobj = body;
+    aadharResponseObj = body;
     if (reqobj.statusCode == 101) {
-      req.body.id = req.body.id
-      req.body.name = reqobj.result.dataFromAadhaar.name;
-      req.body.email_id = reqobj.result.dataFromAadhaar.emailHash;
-      req.body.mobile_no = reqobj.result.dataFromAadhaar.mobileHash;
-      req.body.current_page = "aadhar-verification";
-      req.body.next_page = "cust-details";
-      req.body.target = "aadhar-details";
-      //req.body.aadhar_no = req.body.aadhar_no,
-      req.body.aadhar_details = reqobj.result.dataFromAadhaar;
+     
+
+      let currentTime = new Date().getTime().toString().substr(0, 10);
+      let caseId = randomize("0", 6);
+ 
+      var options = {
+        method: "POST",
+        url: `${config.aadhar.CONSENT_API}`,
+        headers: {
+          "Content-Type": `${config.karza.app_type}`,
+          "x-karza-key": `${config.karza.auth_key}`,
+        },
+        body: {
+          ipAddress: "12.12.12.12",
+          userAgent:
+            "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0",
+          consent: "Y",
+          name: req.body.name ? req.body.name : '',
+          consentTime: currentTime,
+          consentText: "Consent accepted",
+          clientData: { caseId: caseId },
+        },
+        json: true,
+      };
+
+      console.log(
+        "+++++++++++++++++++++++++ aadhaar-consent request obj ++++++++++++++++++++++++++++++"
+      );
+      console.log(options.body);
+      request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+        let consentResp = body;
+        console.log(
+          "+++++++++++++++++++++++++ aadhaar-consent Response obj ++++++++++++++++++++++++++++++"
+        );
+        console.log("consentResp", consentResp);
+        if (consentResp) {
+          setTimeout(() => {
+            var options = {
+              method: "POST",
+              url: `${config.pan.PAN_AADHAR_LINK_STATUS}`,
+              headers: {
+                "Content-Type": `${config.karza.app_type}`,
+                "x-karza-key": `${config.karza.auth_key}`,
+              },
+              body: {
+                consent: "Y",
+                aadhaarNo: req.body.aadhar_no,
+                pan: req.body.pan_no,
+                accessKey: consentResp.result.accessKey,
+                clientData: { caseId: consentResp.result.caseId },
+              },
+              json: true,
+            };
+
+            console.log(
+              "+++++++++++++++++++++++++ PAN aadhaar link status  request obj ++++++++++++++++++++++++++++++"
+            );
+            console.log(options.body);
+            request(options, function (error, response, body) {
+              if (error) {
+                console.log("PAN LINK WITH AADHAR Error", error);
+                res.send({
+                  status: false,
+                  msg: "Your PAN is not linked with Aadhaar Number",
+                });
+                return
+              } else {
+                console.log(
+                  "+++++++++++++++++++++++++ PAN aadhaar link status response obj ++++++++++++++++++++++++++++++"
+                );
+                console.log(body);
+                let response = body;
+                if (
+                  response["statusCode"] == "101" ||
+                  response["statusCode"] == 101
+                ) {
+                  
+                  //create user obj
+                  
+                  req.body.name = aadharResponseObj.result.dataFromAadhaar.name;
+                  req.body.email_id = aadharResponseObj.result.dataFromAadhaar.emailHash;
+                  req.body.mobile_no = aadharResponseObj.result.dataFromAadhaar.mobileHash;
+                  req.body.current_page = "aadhar-verification";
+                  req.body.next_page = "cust-details";
+                  req.body.target = "aadhar-details";
+                  req.body.aadhar_details = aadharResponseObj.result.dataFromAadhaar;
+                  return userService
+              .createUser(req.body)
+              .then(
+                (result) => {
+                  res.send({
+                    status: true,
+                    msg: "User created successfully",
+                    data: result,
+                  });
+                },
+                (err) => {
+                  res.send({
+                    status: false,
+                    msg: "Invalid input details",
+                  });
+                }
+              )
+              .catch((err) => {
+                res.send({
+                  status: false,
+                  msg: "Unexpected Error",
+                });
+              });
+
+                } 
+              }
+            });
+          }, 3000);
+        }
+      });
+
       return userService
         .findByIdAndUpdate(req.body)
         .then(
@@ -1347,5 +1472,204 @@ userMaster.getDashboard = (req, res) => {
 }
 
 
+userMaster.generateToken = (req, res) => {
+  // let tokenReqObj = { 
+  //   "username":"AryaaoneUser", 
+  //   "password":"Ary@@One#fd$23@df#32", 
+  //   "applicationName": "WEB" 
+  //   } 
+
+  let token;
+    var options = {
+      method: "POST",
+      url: "https://api.earlysalary.com/uat/esapi/generateToken",
+      headers: {
+        "Content-Type": `${config.karza.app_type}`
+        
+      },
+      body: {
+          username: "AryaaoneUser",
+          password: "Ary@@One#fd$23@df#32",
+          applicationName: "WEB" 
+          },
+      json: true,
+    };
+
+    console.log(
+      "+++++++++++++++++++++++++ Esalary Token request obj ++++++++++++++++++++++++++++++"
+    );
+    console.log(options.body);
+    request(options, function (error, response, body) {
+      if (error) {
+        console.log("Esalay Error", error);
+        res.send({
+          status: false,
+          msg: error,
+        });
+        return
+      } else {
+        console.log(
+          "+++++++++++++++++++++++++ Esalay Token response obj ++++++++++++++++++++++++++++++"
+        );
+        console.log(body);
+        let response = body;
+        if (
+          response["statusCode"] == "200" ||
+          response["statusCode"] == 200
+        ) {
+          token = response["token"];
+          if(token){
+            setTimeout(() => {
+              let reqObj = {
+                "mobilenumber": 9884353315, //requried
+                "profile": {
+                  "firstname": "NAGARAJ",  // required
+                  "lastname": "DEVARAJ", //required
+                  "dob": "1989-04-17", //requried
+                  "gender": "Male", // required
+                  "emailid": "nagaraj.info6@gmail.com", //requried
+                  "profession": "salaried", //required
+                  "address1": "1 H 23 ramesh dutta,street beadon street", //requried
+                  "address2": "street beadon street",
+                  "city": "Kolkata",
+                  "state": "West Bengal",
+                  "pincode": 625515, //requried
+                  "maritalstatus": "Single",
+                  "addresstype": "Self-Owned",
+                  "fathername": "vijay kumar agarwal",
+                  "mothername": "mina agarwal"
+                },
+                "finance": {
+                  "pan": "AMBPN4511G"
+                },
+                "employeedetails": {
+                  "employername": "kuya technologies Pvt Ltd",
+                  "officeaddress": "kuya technologies Pvt Ltd coimbatore",
+                  "officepincode": 640129, //requried
+                  "salary": 25000, //requried
+                  "dateofjoining": "2020-07-21",
+                  "designation": "HR ACCOUNTS"
+                },
+                "product": {
+                  "type": "3"
+                }
+              }
+              //req obj end
+
+              return userService
+              .getUserById({ _id: req.body.id })
+              .then(
+                (result) => {
+                  userData = result;
+
+                  let request =  {
+                    mobilenumber: userData.aadhar_details.mobileHash,
+                    profile: {
+                      firstname: userData.aadhar_details.name.split(" ")[0],
+                      lastname: userData.aadhar_details.name.split(" ")[1],
+                      dob: userData.aadhar_details.dob,
+                      gender: userData.aadhar_details.gender == 'M' ? 'Male' : 'Female',
+                      emailid: userData.aadhar_details.emailHash,
+                      profession: userData.professional_type,
+                      address1: userData.aadhar_details.address.combinedAddress,
+                      pincode: userData.aadhar_details.address.pincode,
+                      finance: { 
+                        pan: userData.pan_no
+                      },
+                      employeedetails: {
+                        officepincode:'',
+                        salary:userData.monthly_income
+                      }
+                    }
+                  }
+
+                  var options = {
+                    method: "POST",
+                    url: "https://api.socialworth.in/betaProfileIngestion/profile-ingestion",
+                    headers: {
+                      "Content-Type": `${config.karza.app_type}`,
+                      "token": `${token}`
+                      
+                    },
+                    body: 
+                      {
+                        mobilenumber: 9884353315, //requried
+                        profile: {
+                          firstname: "NAGARAJ",  // required
+                          lastname: "DEVARAJ", //required
+                          dob: "1989-04-17", //requried
+                          gender: "Male", // required
+                          emailid: "nagaraj.info6@gmail.com", //requried
+                          profession: "salaried", //required
+                          address1: "1 H 23 ramesh dutta,street beadon street", //requried
+                          address2: "street beadon street",
+                          city: "Kolkata",
+                          state: "West Bengal",
+                          pincode: 625515, //requried
+                          maritalstatus: "Single",
+                          addresstype: "Self-Owned",
+                          fathername: "vijay kumar agarwal",
+                          mothername: "mina agarwal"
+                        },
+                        finance: {
+                          pan: "AMBPN4511G"
+                        },
+                        employeedetails: {
+                          employername: "kuya technologies Pvt Ltd",
+                          officeaddress: "kuya technologies Pvt Ltd coimbatore",
+                          officepincode: 640129, //requried
+                          salary: 25000, //requried
+                          dateofjoining: "2020-07-21",
+                          designation: "HR ACCOUNTS"
+                        },
+                        product: {
+                          type: "3"
+                        }
+                      
+                    },
+                    json: true,
+                  };
+              
+                  console.log(
+                    "+++++++++++++++++++++++++ Esalary request obj ++++++++++++++++++++++++++++++"
+                  );
+                  console.log(options);
+                  request(options, function (error, response, body) {
+                    if (error) {
+                      console.log("Esalay Error", error);
+                      res.send({
+                        status: false,
+                        msg: error,
+                      });
+                      return
+                    } else {
+                      console.log(
+                        "+++++++++++++++++++++++++ Esalay  response obj ++++++++++++++++++++++++++++++"
+                      );
+                      console.log(body);
+                      let response = body;
+                    }
+                  })
+
+                }, err => {
+                  res.send({
+                    status:false,
+                    msg:"User details not found"
+                  })
+                }).catch(err => {
+                  res.send({
+                    status:false,
+                    msg:"Something Went Wrong"
+                  })
+                });
+          
+
+            },1000)
+          }
+        }
+      }
+    })
+    
+}
 
 module.exports = userMaster;

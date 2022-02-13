@@ -35,7 +35,8 @@ config.dev = {
 	},
 	pan: {
 		VERIFICATION_API : 'https://testapi.karza.in/v3/pan-profile',
-		PAN_AADHAR_PROFILE_API : 'https://testapi.karza.in/v3/pan-aadhaar-profile'
+		PAN_AADHAR_PROFILE_API : 'https://testapi.karza.in/v3/pan-aadhaar-profile',
+		PAN_AADHAR_LINK_STATUS : "https://testapi.karza.in/v3/pan-aadhaar-link"
 	}  	
 };
 
