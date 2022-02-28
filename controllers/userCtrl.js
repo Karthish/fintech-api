@@ -565,7 +565,7 @@ userMaster.aadharOTPVerification = function (req, res) {
     );
     console.log(body);
     aadharResponseObj = body;
-    if (reqobj.statusCode == 101) {
+    if (aadharResponseObj.statusCode == 101) {
      
 
       let currentTime = new Date().getTime().toString().substr(0, 10);
@@ -616,7 +616,7 @@ userMaster.aadharOTPVerification = function (req, res) {
                 aadhaarNo: req.body.aadhar_no,
                 pan: req.body.pan_no,
                 accessKey: consentResp.result.accessKey,
-                clientData: { caseId: consentResp.result.caseId },
+                clientData: { caseId: consentResp.clientData.caseId },
               },
               json: true,
             };
@@ -647,8 +647,8 @@ userMaster.aadharOTPVerification = function (req, res) {
                   //create user obj
                   
                   req.body.name = aadharResponseObj.result.dataFromAadhaar.name;
-                  req.body.email_id = aadharResponseObj.result.dataFromAadhaar.emailHash;
-                  req.body.mobile_no = aadharResponseObj.result.dataFromAadhaar.mobileHash;
+                 // req.body.email_id = aadharResponseObj.result.dataFromAadhaar.emailHash;
+                  //req.body.mobile_no = aadharResponseObj.result.dataFromAadhaar.mobileHash;
                   req.body.current_page = "aadhar-verification";
                   req.body.next_page = "cust-details";
                   req.body.target = "aadhar-details";
@@ -1473,6 +1473,7 @@ userMaster.getDashboard = (req, res) => {
 
 
 userMaster.generateToken = (req, res) => {
+  console.log('enter here')
   // let tokenReqObj = { 
   //   "username":"AryaaoneUser", 
   //   "password":"Ary@@One#fd$23@df#32", 
@@ -1520,41 +1521,7 @@ userMaster.generateToken = (req, res) => {
           token = response["token"];
           if(token){
             setTimeout(() => {
-              let reqObj = {
-                "mobilenumber": 9884353315, //requried
-                "profile": {
-                  "firstname": "NAGARAJ",  // required
-                  "lastname": "DEVARAJ", //required
-                  "dob": "1989-04-17", //requried
-                  "gender": "Male", // required
-                  "emailid": "nagaraj.info6@gmail.com", //requried
-                  "profession": "salaried", //required
-                  "address1": "1 H 23 ramesh dutta,street beadon street", //requried
-                  "address2": "street beadon street",
-                  "city": "Kolkata",
-                  "state": "West Bengal",
-                  "pincode": 625515, //requried
-                  "maritalstatus": "Single",
-                  "addresstype": "Self-Owned",
-                  "fathername": "vijay kumar agarwal",
-                  "mothername": "mina agarwal"
-                },
-                "finance": {
-                  "pan": "AMBPN4511G"
-                },
-                "employeedetails": {
-                  "employername": "kuya technologies Pvt Ltd",
-                  "officeaddress": "kuya technologies Pvt Ltd coimbatore",
-                  "officepincode": 640129, //requried
-                  "salary": 25000, //requried
-                  "dateofjoining": "2020-07-21",
-                  "designation": "HR ACCOUNTS"
-                },
-                "product": {
-                  "type": "3"
-                }
-              }
-              //req obj end
+   
 
               return userService
               .getUserById({ _id: req.body.id })
@@ -1563,13 +1530,13 @@ userMaster.generateToken = (req, res) => {
                   userData = result;
 
                   let request =  {
-                    mobilenumber: userData.aadhar_details.mobileHash,
+                    mobilenumber: userData.mobile_no,
                     profile: {
                       firstname: userData.aadhar_details.name.split(" ")[0],
                       lastname: userData.aadhar_details.name.split(" ")[1],
                       dob: userData.aadhar_details.dob,
                       gender: userData.aadhar_details.gender == 'M' ? 'Male' : 'Female',
-                      emailid: userData.aadhar_details.emailHash,
+                      emailid: userData.email_id,
                       profession: userData.professional_type,
                       address1: userData.aadhar_details.address.combinedAddress,
                       pincode: userData.aadhar_details.address.pincode,
@@ -1593,19 +1560,19 @@ userMaster.generateToken = (req, res) => {
                     },
                     body: 
                       {
-                        mobilenumber: 9884353315, //requried
+                        mobilenumber: 9952538003, //requried
                         profile: {
-                          firstname: "NAGARAJ",  // required
-                          lastname: "DEVARAJ", //required
-                          dob: "1989-04-17", //requried
+                          firstname: "Ramanathan",  // required
+                          lastname: "Alagappan", //required
+                          dob: "1992-07-02", //requried
                           gender: "Male", // required
-                          emailid: "nagaraj.info6@gmail.com", //requried
+                          emailid: "rampsg007@gmail.com", //requried
                           profession: "salaried", //required
-                          address1: "1 H 23 ramesh dutta,street beadon street", //requried
-                          address2: "street beadon street",
-                          city: "Kolkata",
-                          state: "West Bengal",
-                          pincode: 625515, //requried
+                          address1: "B4 1E,Gowtham ABC Avenue,Peelamedu", //requried
+                          address2: "Coimbatore ",
+                          city: "Coimbatore ",
+                          state: "Tamilnadu",
+                          pincode: 641006, //requried
                           maritalstatus: "Single",
                           addresstype: "Self-Owned",
                           fathername: "vijay kumar agarwal",
@@ -1617,8 +1584,8 @@ userMaster.generateToken = (req, res) => {
                         employeedetails: {
                           employername: "kuya technologies Pvt Ltd",
                           officeaddress: "kuya technologies Pvt Ltd coimbatore",
-                          officepincode: 640129, //requried
-                          salary: 25000, //requried
+                          officepincode: 560008, //requried
+                          salary: 180000, //requried
                           dateofjoining: "2020-07-21",
                           designation: "HR ACCOUNTS"
                         },
