@@ -4,6 +4,7 @@ var request = require('request');
 var multer = require('multer');
 const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
+const pjson = require("./package.json");
 
 var user = require('./controllers/userCtrl.js');
 var loan  = require('./controllers/loanCtrl');
@@ -14,9 +15,16 @@ var loanSubCategory = require('./controllers/loanSubCategoryCtrl');
 var configService = require('./services/configService');
 var userService = require('./services/userService');
 
+
 router.get('/healthCheck', (req, res) => {
     res.send('Application connected with API');
 });
+
+router.get('/version', (req, res) => {
+    console.log(pjson.version);
+    res.send(pjson.version);
+});
+
 
 //Test API
 router.get('/tmproute', user.testFunction);

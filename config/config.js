@@ -43,11 +43,11 @@ config.dev = {
 config.test = {
 	db : 'mongodb+srv://admin:admin@cluster0.pvsbm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
 	host : "http://52.66.163.16",
-	node_port : 8871, 
+	node_port : 8871,
 	mailer : {
-		id: '',
-		password: ''
-	}	 
+		id: 'maplestreetfinserv@gmail.com',
+		password: 'Lazyboys@123'
+	}
 };
 
 module.exports = config;
