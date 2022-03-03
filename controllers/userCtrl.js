@@ -157,7 +157,7 @@ userMaster.panVerification = function (req, res) {
     }
     let userObj;
     return userService.findOne({pan_no: reqObj.pan_no}).then(result => {
-        res.send({status: true, msg: "PAN details already exists", data: result})
+        res.send({status: false, msg: "PAN details already exists", data: result})
     }, err => {
         var data = JSON.stringify({
             pan: reqObj.pan_no,
