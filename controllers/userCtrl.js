@@ -1479,7 +1479,7 @@ userMaster.generateToken = (req, res) => {
   //   "password":"Ary@@One#fd$23@df#32", 
   //   "applicationName": "WEB" 
   //   } 
-
+  req.body.id = '621fbfa0014e060ee134b0c5';
   let token;
     var options = {
       method: "POST",
@@ -1528,7 +1528,8 @@ userMaster.generateToken = (req, res) => {
               .then(
                 (result) => {
                   userData = result;
-
+                  //console.log('userData', userData)
+                  getUserProfileData(userData, token, res)
                   let request =  {
                     mobilenumber: userData.mobile_no,
                     profile: {
@@ -1550,73 +1551,7 @@ userMaster.generateToken = (req, res) => {
                     }
                   }
 
-                  var options = {
-                    method: "POST",
-                    url: "https://api.socialworth.in/betaProfileIngestion/profile-ingestion",
-                    headers: {
-                      "Content-Type": `${config.karza.app_type}`,
-                      "token": `${token}`
-                      
-                    },
-                    body: 
-                      {
-                        mobilenumber: 9952538003, //requried
-                        profile: {
-                          firstname: "Ramanathan",  // required
-                          lastname: "Alagappan", //required
-                          dob: "1992-07-02", //requried
-                          gender: "Male", // required
-                          emailid: "rampsg007@gmail.com", //requried
-                          profession: "salaried", //required
-                          address1: "B4 1E,Gowtham ABC Avenue,Peelamedu", //requried
-                          address2: "Coimbatore ",
-                          city: "Coimbatore ",
-                          state: "Tamilnadu",
-                          pincode: 641006, //requried
-                          maritalstatus: "Single",
-                          addresstype: "Self-Owned",
-                          fathername: "vijay kumar agarwal",
-                          mothername: "mina agarwal"
-                        },
-                        finance: {
-                          pan: "AMBPN4511G"
-                        },
-                        employeedetails: {
-                          employername: "kuya technologies Pvt Ltd",
-                          officeaddress: "kuya technologies Pvt Ltd coimbatore",
-                          officepincode: 560008, //requried
-                          salary: 180000, //requried
-                          dateofjoining: "2020-07-21",
-                          designation: "HR ACCOUNTS"
-                        },
-                        product: {
-                          type: "3"
-                        }
-                      
-                    },
-                    json: true,
-                  };
               
-                  console.log(
-                    "+++++++++++++++++++++++++ Esalary request obj ++++++++++++++++++++++++++++++"
-                  );
-                  console.log(options);
-                  request(options, function (error, response, body) {
-                    if (error) {
-                      console.log("Esalay Error", error);
-                      res.send({
-                        status: false,
-                        msg: error,
-                      });
-                      return
-                    } else {
-                      console.log(
-                        "+++++++++++++++++++++++++ Esalay  response obj ++++++++++++++++++++++++++++++"
-                      );
-                      console.log(body);
-                      let response = body;
-                    }
-                  })
 
                 }, err => {
                   res.send({
@@ -1637,6 +1572,105 @@ userMaster.generateToken = (req, res) => {
       }
     })
     
+}
+
+function getUserProfileData(userData, token, res) {
+  console.log('getUserProfileData')
+  var options = {
+    method: "POST",
+    url: "https://api.socialworth.in/betaProfileIngestion/profile-ingestion",
+    headers: {
+      "Content-Type": `${config.karza.app_type}`,
+      "token": `${token}`
+      
+    },
+    body: 
+      {
+        mobilenumber: 9952538003, //requried
+        profile: {
+          firstname: "Ramanathan",  // required
+          lastname: "Alagappan", //required
+          dob: "1992-07-02", //requried
+          gender: "Male", // required
+          emailid: "rampsg007@gmail.com", //requried
+          profession: "salaried", //required
+          address1: "B4 1E,Gowtham ABC Avenue,Peelamedu", //requried
+          address2: "Coimbatore ",
+          city: "Coimbatore ",
+          state: "Tamilnadu",
+          pincode: 641006, //requried
+          maritalstatus: "Single",
+          addresstype: "Self-Owned",
+          fathername: "vijay kumar agarwal",
+          mothername: "mina agarwal"
+        },
+        finance: {
+          pan: "AMBPN4511G"
+        },
+        employeedetails: {
+          employername: "kuya technologies Pvt Ltd",
+          officeaddress: "kuya technologies Pvt Ltd coimbatore",
+          officepincode: 560008, //requried
+          salary: 180000, //requried
+          dateofjoining: "2020-07-21",
+          designation: "HR ACCOUNTS"
+        },
+        product: {
+          type: "3"
+        }
+      
+    },
+    json: true,
+  };
+
+  console.log(
+    "+++++++++++++++++++++++++ Esalary request obj ++++++++++++++++++++++++++++++"
+  );
+  console.log(options);
+  request(options, function (error, response, body) {
+    if (error) {
+      console.log("Esalay Error", error);
+      res.send({
+        status: false,
+        msg: error,
+      });
+      return
+    } else {
+      console.log(
+        "+++++++++++++++++++++++++ Esalay  response obj ++++++++++++++++++++++++++++++"
+      );
+      console.log(body);
+      let response = body;
+    }
+  })
+
+  //test api
+
+  // var options = {
+  //   method: "POST",
+  //   url: "https://api.socialworth.in/betaProfileIngestion/profile-ingestion",
+  //   headers: {
+  //     "Content-Type": `${config.karza.app_type}`,
+  //     "token": `${token}`
+      
+  //   },
+  //   body: {
+  //       username: "AryaaoneUser",
+  //       password: "Ary@@One#fd$23@df#32",
+  //       applicationName: "WEB" 
+  //       },
+  //   json: true,
+  // };
+
+  // console.log(
+  //   "+++++++++++++++++++++++++ Esalary Token222222 request obj ++++++++++++++++++++++++++++++"
+  // );
+  // console.log(options.body);
+  // request(options, function (error, response, body) {
+  //   console.log('error', error);
+  //   console.log('body', body);
+  //   if (error) {}
+  // })
 }
 
 module.exports = userMaster;
