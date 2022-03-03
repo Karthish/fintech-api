@@ -1,10 +1,10 @@
 {
   "name": "fintechserver",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "",
   "scripts": {
     "init": "npm install",
-    "start": "node app.js"
+    "start": "npm --no-git-tag-version version patch & node app.js"
   },
   "dependencies": {
     "aws-sdk": "^2.998.0",
