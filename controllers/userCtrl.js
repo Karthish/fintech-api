@@ -444,7 +444,7 @@ userMaster.aadharVerification = function (req, res) {
             userAgent:
                 "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0",
             consent: "Y",
-            name: reqObj.pan_name ? reqObj.pan_name : '',
+            name: reqObj.pan_name ? reqObj.pan_name : 'testUser',
             consentTime: currentTime,
             consentText: "Consent accepted",
             clientData: {caseId: caseId},
@@ -583,7 +583,7 @@ userMaster.aadharOTPVerification = function (req, res) {
                     userAgent:
                         "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0",
                     consent: "Y",
-                    name: req.body.name ? req.body.name : '',
+                    name: req.body.name ? req.body.name : 'testUser',
                     consentTime: currentTime,
                     consentText: "Consent accepted",
                     clientData: {caseId: caseId},
@@ -1605,6 +1605,28 @@ userMaster.generateToken = (req, res) => {
 
 function getUserProfileData(userData, token, res) {
   console.log('getUserProfileData')
+                          let request = {
+                                        mobilenumber: userData.mobile_no,
+                                        profile: {
+                                            firstname: userData.aadhar_details.name.split(" ")[0],
+                                            lastname: userData.aadhar_details.name.split(" ")[1],
+                                            dob: userData.aadhar_details.dob,
+                                            gender: userData.aadhar_details.gender == 'M' ? 'Male' : 'Female',
+                                            emailid: userData.email_id,
+                                            profession: userData.professional_type,
+                                            address1: userData.aadhar_details.address.combinedAddress,
+                                            pincode: userData.aadhar_details.address.pincode,
+                                            finance: {
+                                                pan: userData.pan_no
+                                            },
+                                            employeedetails: {
+                                                officepincode: '',
+                                                salary: userData.monthly_income
+                                            }
+                                        }
+                                    }
+
+                                   
   var options = {
     method: "POST",
     url: "https://api.socialworth.in/betaProfileIngestion/profile-ingestion",
@@ -1613,42 +1635,7 @@ function getUserProfileData(userData, token, res) {
       "token": `${token}`
       
     },
-    body: 
-      {
-        mobilenumber: 9952538003, //requried
-        profile: {
-          firstname: "Ramanathan",  // required
-          lastname: "Alagappan", //required
-          dob: "1992-07-02", //requried
-          gender: "Male", // required
-          emailid: "rampsg007@gmail.com", //requried
-          profession: "salaried", //required
-          address1: "B4 1E,Gowtham ABC Avenue,Peelamedu", //requried
-          address2: "Coimbatore ",
-          city: "Coimbatore ",
-          state: "Tamilnadu",
-          pincode: 641006, //requried
-          maritalstatus: "Single",
-          addresstype: "Self-Owned",
-          fathername: "vijay kumar agarwal",
-          mothername: "mina agarwal"
-        },
-        finance: {
-          pan: "AMBPN4511G"
-        },
-        employeedetails: {
-          employername: "kuya technologies Pvt Ltd",
-          officeaddress: "kuya technologies Pvt Ltd coimbatore",
-          officepincode: 560008, //requried
-          salary: 180000, //requried
-          dateofjoining: "2020-07-21",
-          designation: "HR ACCOUNTS"
-        },
-        product: {
-          type: "3"
-        }
-      
-    },
+    body: request,
     json: true,
   };
 
@@ -1670,6 +1657,11 @@ function getUserProfileData(userData, token, res) {
       );
       console.log(body);
       let response = body;
+      res.send({
+        status: true,
+        msg: "Early salary response",
+        data: response
+      })
     }
   })
 
