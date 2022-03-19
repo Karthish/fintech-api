@@ -1448,6 +1448,8 @@ userMaster.generateToken = (req, res) => {
     //   "applicationName": "WEB"
     //   }
 
+    //req.body.id = req.body.id ? req.body.id : "6220ede1014e060ee134b0e4";
+    req.body.cust_ref_id = req.body.cust_ref_id ? req.body.cust_ref_id : "6220ede1014e060ee134b0e4";
     let token;
     var options = {
         method: "POST",
@@ -1488,102 +1490,16 @@ userMaster.generateToken = (req, res) => {
             ) {
                 token = response["token"];
                 if (token) {
-                    setTimeout(() => {
+                    // setTimeout(() => {
                         return userService
-                            .getUserById({_id: req.body.id})
+                            .getUserById({_id: req.body.cust_ref_id})
                             .then(
                                 (result) => {
                                     userData = result;
+                                    userData['cust_ref_id'] = req.body.cust_ref_id;
+                                    userData['bank_ref_id'] = req.body.bank_ref_id;
                                     getUserProfileData(userData, token, res)
-                                    // let request = {
-                                    //     mobilenumber: userData.mobile_no,
-                                    //     profile: {
-                                    //         firstname: userData.aadhar_details.name.split(" ")[0],
-                                    //         lastname: userData.aadhar_details.name.split(" ")[1],
-                                    //         dob: userData.aadhar_details.dob,
-                                    //         gender: userData.aadhar_details.gender == 'M' ? 'Male' : 'Female',
-                                    //         emailid: userData.email_id,
-                                    //         profession: userData.professional_type,
-                                    //         address1: userData.aadhar_details.address.combinedAddress,
-                                    //         pincode: userData.aadhar_details.address.pincode,
-                                    //         finance: {
-                                    //             pan: userData.pan_no
-                                    //         },
-                                    //         employeedetails: {
-                                    //             officepincode: '',
-                                    //             salary: userData.monthly_income
-                                    //         }
-                                    //     }
-                                    // }
-
-                                    // var options = {
-                                    //     method: "POST",
-                                    //     url: "https://api.socialworth.in/betaProfileIngestion/profile-ingestion",
-                                    //     headers: {
-                                    //         "Content-Type": `${config.karza.app_type}`,
-                                    //         "token": `${token}`
-
-                                    //     },
-                                    //     body:
-                                    //         {
-                                    //             mobilenumber: 9952538003, //requried
-                                    //             profile: {
-                                    //                 firstname: "Ramanathan",  // required
-                                    //                 lastname: "Alagappan", //required
-                                    //                 dob: "1992-07-02", //requried
-                                    //                 gender: "Male", // required
-                                    //                 emailid: "rampsg007@gmail.com", //requried
-                                    //                 profession: "salaried", //required
-                                    //                 address1: "B4 1E,Gowtham ABC Avenue,Peelamedu", //requried
-                                    //                 address2: "Coimbatore ",
-                                    //                 city: "Coimbatore ",
-                                    //                 state: "Tamilnadu",
-                                    //                 pincode: 641006, //requried
-                                    //                 maritalstatus: "Single",
-                                    //                 addresstype: "Self-Owned",
-                                    //                 fathername: "vijay kumar agarwal",
-                                    //                 mothername: "mina agarwal"
-                                    //             },
-                                    //             finance: {
-                                    //                 pan: "AMBPN4511G"
-                                    //             },
-                                    //             employeedetails: {
-                                    //                 employername: "kuya technologies Pvt Ltd",
-                                    //                 officeaddress: "kuya technologies Pvt Ltd coimbatore",
-                                    //                 officepincode: 560008, //requried
-                                    //                 salary: 180000, //requried
-                                    //                 dateofjoining: "2020-07-21",
-                                    //                 designation: "HR ACCOUNTS"
-                                    //             },
-                                    //             product: {
-                                    //                 type: "3"
-                                    //             }
-
-                                    //         },
-                                    //     json: true,
-                                    // };
-
-                                    // console.log(
-                                    //     "+++++++++++++++++++++++++ Esalary request obj ++++++++++++++++++++++++++++++"
-                                    // );
-                                    // console.log(options);
-                                    // request(options, function (error, response, body) {
-                                    //     if (error) {
-                                    //         console.log("Esalay Error", error);
-                                    //         res.send({
-                                    //             status: false,
-                                    //             msg: error,
-                                    //         });
-                                    //         return
-                                    //     } else {
-                                    //         console.log(
-                                    //             "+++++++++++++++++++++++++ Esalay  response obj ++++++++++++++++++++++++++++++"
-                                    //         );
-                                    //         console.log(body);
-                                    //         let response = body;
-                                    //     }
-                                    // })
-
+                                 
                                 }, err => {
                                     res.send({
                                         status: false,
@@ -1595,7 +1511,7 @@ userMaster.generateToken = (req, res) => {
                                     msg: "Something Went Wrong"
                                 })
                             });
-                    }, 1000)
+                    // }, 1000)
                 }
             }
         }
@@ -1604,9 +1520,12 @@ userMaster.generateToken = (req, res) => {
 }
 
 function getUserProfileData(userData, token, res) {
-  console.log('getUserProfileData')
-                          let request = {
-                                        mobilenumber: userData.mobile_no,
+  //console.log('getUserProfileData', userData)
+  console.log('token', token);
+
+                          //dynamic Request from DB 
+                          let dynamicRequestObj = {
+                                        mobilenumber: +userData.mobile_no,
                                         profile: {
                                             firstname: userData.aadhar_details.name.split(" ")[0],
                                             lastname: userData.aadhar_details.name.split(" ")[1],
@@ -1615,16 +1534,19 @@ function getUserProfileData(userData, token, res) {
                                             emailid: userData.email_id,
                                             profession: userData.professional_type,
                                             address1: userData.aadhar_details.address.combinedAddress,
-                                            pincode: userData.aadhar_details.address.pincode,
+                                            pincode: +userData.aadhar_details.address.splitAddress.pincode,
                                             finance: {
                                                 pan: userData.pan_no
                                             },
                                             employeedetails: {
-                                                officepincode: '',
-                                                salary: userData.monthly_income
+                                                officepincode: +userData.aadhar_details.address.splitAddress.pincode,
+                                                salary: +userData.monthly_income
                                             }
                                         }
                                     }
+
+                                  
+                                   // console.log('request obj', request)
 
                                    
   var options = {
@@ -1634,10 +1556,11 @@ function getUserProfileData(userData, token, res) {
       "Content-Type": `${config.karza.app_type}`,
       "token": `${token}`
       
-    },
-    body: request,
-    json: true,
-  };
+          },
+
+         body: dynamicRequestObj,         
+        json: true,
+      };
 
   console.log(
     "+++++++++++++++++++++++++ Esalary request obj ++++++++++++++++++++++++++++++"
@@ -1650,17 +1573,60 @@ function getUserProfileData(userData, token, res) {
         status: false,
         msg: error,
       });
-      return
+   
     } else {
       console.log(
         "+++++++++++++++++++++++++ Esalay  response obj ++++++++++++++++++++++++++++++"
       );
       console.log(body);
-      let response = body;
-      res.send({
-        status: true,
-        msg: "Early salary response",
-        data: response
+      let result = body;
+      // res.send({
+      //   status: true,
+      //   msg: "Early salary response",
+      //   data: result
+      // })
+      let customerLoanReqObj = {};
+      customerLoanReqObj['cust_ref_id'] = userData.cust_ref_id;
+      customerLoanReqObj['bank_ref_id'] = userData.bank_ref_id;
+      customerLoanReqObj['loan_details'] = result;
+
+      return bankService.findCustomerLoanDetails(customerLoanReqObj).then(resp => {
+        return bankService.updateCustomerLoanDetails(customerLoanReqObj).then(resp => {
+          res.send({
+            status:true,
+            msg: 'Loan sanction details updated successfully',
+            data: resp
+          })
+        }, err => {
+          res.send({
+            status:false,
+            msg: 'Inavaid input details',
+          })
+        }).catch(err => {
+          res.send({
+            status:false,
+            msg: 'Something went wrong',
+          })
+        })
+      }, err => {
+        return bankService.createCustomerLoanDetails(customerLoanReqObj).then(resp => {
+          res.send({
+            status:true,
+            msg: 'Loan sanction details saved successfully',
+            data: resp
+          })
+        }, err => {
+          res.send({
+            status:false,
+            msg: 'Invalid input details',
+          })
+        }).catch(err => {
+          res.send({
+            status:false,
+            msg: 'Something went wrong',
+            
+          })
+        })
       })
     }
   })
@@ -1668,4 +1634,44 @@ function getUserProfileData(userData, token, res) {
  
 }
 
+
+userMaster.updateBankDetails = (req, res) => {
+  req.body.target = "bankDetails";
+  req.body.current_page = 'loan-offer-list';
+  req.body.next_page = 'loan-offer-details';
+  return userService
+      .findByIdAndUpdate(req.body)
+      .then(
+          (result) => {
+
+              return bankService.findOne({_id: req.body.bank_ref_id}).then(result => {
+                  res.send({
+                      status: true,
+                      msg: "Bank details updated",
+                      data: result,
+                  });
+              }, err => {
+                  res.send({status: false, msg: err.message})
+              }).catch((err) => {
+                  res.send({
+                      status: false,
+                      msg: "Unexpected Error",
+                  });
+              });
+
+          },
+          (err) => {
+              res.send({
+                  status: false,
+                  msg: "Invalid input details",
+              });
+          }
+      )
+      .catch((err) => {
+          res.send({
+              status: false,
+              msg: "Unexpected Error",
+          });
+      });
+};
 module.exports = userMaster;
