@@ -1695,121 +1695,125 @@ function getUserProfileData(userData, token, res) {
       });
    
     } else {
-      console.log(
-        "+++++++++++++++++++++++++ Esalay  response obj ++++++++++++++++++++++++++++++"
-      );
-      console.log(body);
-      let result = body;
-      // res.send({
-      //   status: true,
-      //   msg: "Early salary response",
-      //   data: result
-      // })
-      let customerLoanReqObj = {};
-      customerLoanReqObj['cust_ref_id'] = userData.cust_ref_id;
-      customerLoanReqObj['bank_ref_id'] = userData.bank_ref_id;
-      customerLoanReqObj['loan_details'] = result;
-      let loanSanctionResponse = null;
-      return bankService.findCustomerLoanDetails(customerLoanReqObj).then(resp => {
-        return bankService.updateCustomerLoanDetails(customerLoanReqObj).then(resp => {
-          loanSanctionResponse = resp;
-          let customerTblUpdateObj = {};
-          customerTblUpdateObj['id'] = userData._id;
-          customerTblUpdateObj['target'] = "bankDetails";
-          customerTblUpdateObj['current_page'] = 'loan-offer-list';
-          customerTblUpdateObj['next_page'] = 'loan-offer-details';
-         
-    return userService
-        .findByIdAndUpdate(customerTblUpdateObj)
-        .then(
-            (result) => {
-              res.send({status: true,
-              msg:"Loan sanction details updated successfully",
-              data: loanSanctionResponse 
-            })
-            }, err => {
-              res.send({
-                status:false,
-                msg: 'Inavaid input details',
-              })
-            }).catch(err => {
-              res.send({
-                status:false,
-                msg: 'Something went wrong',
-              })
-            })
-          
-        }, err => {
-          res.send({
-            status:false,
-            msg: 'Inavaid input details',
-          })
-        }).catch(err => {
-          res.send({
-            status:false,
-            msg: 'Something went wrong',
-          })
-        })
-      }, err => {
-        return bankService.createCustomerLoanDetails(customerLoanReqObj).then(resp => {
-        //   res.send({
-        //     status:true,
-        //     msg: 'Loan sanction details saved successfully',
-        //     data: resp
-        //   })
-        let customerTblUpdateObj = {};
-          customerTblUpdateObj['id'] = userData._id;
-          customerTblUpdateObj['target'] = "bankDetails";
-          customerTblUpdateObj['current_page'] = 'loan-offer-list';
-          customerTblUpdateObj['next_page'] = 'loan-offer-details';
-          return userService
-        .findByIdAndUpdate(customerTblUpdateObj)
-        .then(
-            (result) => {
-              res.send({status: true,
-              msg:"Loan sanction details updated successfully",
-              data: loanSanctionResponse 
-            })
-            }, err => {
-              res.send({
-                status:false,
-                msg: 'Inavaid input details',
-              })
-            }).catch(err => {
-              res.send({
-                status:false,
-                msg: 'Something went wrong',
-              })
-            })
-          
-        }, err => {
-          res.send({
-            status:false,
-            msg: 'Inavaid input details',
-          })
-        }).catch(err => {
-          res.send({
-            status:false,
-            msg: 'Something went wrong',
-          })
-        })
+        let eSalaryResponse = null;
+        let loanApplicationNumber = randomize("0", 8);
+            console.log(
+                "+++++++++++++++++++++++++ Esalay  response obj ++++++++++++++++++++++++++++++"
+            );
+            console.log(body);
+             eSalaryResponse = body;
 
-        }, err => {
-          res.send({
-            status:false,
-            msg: 'Invalid input details',
-          })
-        }).catch(err => {
-          res.send({
-            status:false,
-            msg: 'Something went wrong',
-            
-          })
+            let customerLoanReqObj = {};
+            customerLoanReqObj['cust_ref_id'] = userData.cust_ref_id;
+            customerLoanReqObj['bank_ref_id'] = userData.bank_ref_id;
+            customerLoanReqObj['loan_details'] = eSalaryResponse;
+            customerLoanReqObj['loan_application_number'] = loanApplicationNumber;
+            let loanSanctionResponse = null;
+            return bankService.findCustomerLoanDetails(customerLoanReqObj).then(resp => {
+                //update customer loan details in loan sanction collection
+                return bankService.updateCustomerLoanDetails(customerLoanReqObj).then(resp => {
+                    loanSanctionResponse = resp;
+                    let customerTblUpdateObj = {};
+                    customerTblUpdateObj['id'] = userData._id;
+                    customerTblUpdateObj['target'] = "bankDetails";
+                    customerTblUpdateObj['current_page'] = 'loan-offer-list';
+                    customerTblUpdateObj['next_page'] = 'loan-offer-details';
+                    customerTblUpdateObj['customer_ref_id'] = eSalaryResponse.customerid;
+                    customerTblUpdateObj['loan_sanction_ref_id'] = resp._id;
+                    customerTblUpdateObj['loan_application_number'] = loanApplicationNumber;
+
+                    //update customer collection start
+                    return userService
+                    .findByIdAndUpdate(customerTblUpdateObj)
+                    .then(
+                        (result) => {
+                            res.send({
+                                status: true,
+                                msg: "Loan sanction details updated successfully",
+                                data: loanSanctionResponse
+                            })
+                        }, err => {
+                            res.send({
+                                status: false,
+                                msg: 'Inavaid input details',
+                            })
+                        }).catch(err => {
+                        res.send({
+                            status: false,
+                            msg: 'Something went wrong',
+                        })
+                    })
+                    //update customer collection end
+                }, err => {
+                    res.send({
+                        status: false,
+                        msg: "Invalid input details"
+                    })
+                }).catch(err => {
+                    res.send({
+                        status: false,
+                        msg: "Something went wrong"
+                    })
+                })
+                //update customer loan details in loan sanction collection end
+
+            }, err => {
+                // error part on find customer loan details not exits
+
+                //save customer loan details start
+                return bankService.createCustomerLoanDetails(customerLoanReqObj).then(resp => {
+                    let customerTblUpdateObj = {};
+                    customerTblUpdateObj['id'] = userData._id;
+                    customerTblUpdateObj['target'] = "bankDetails";
+                    customerTblUpdateObj['current_page'] = 'loan-offer-list';
+                    customerTblUpdateObj['next_page'] = 'loan-offer-details';
+                    customerTblUpdateObj['customer_ref_id'] = eSalaryResponse.customerid;
+                    customerTblUpdateObj['loan_sanction_ref_id'] = resp._id;
+                    customerTblUpdateObj['loan_application_number'] = loanApplicationNumber;
+
+                    //customer collection update start
+                    return userService.findByIdAndUpdate(customerTblUpdateObj).then(result => {
+                        res.send({
+                            status: true,
+                            msg: "Loan sanction details updated successfully",
+                            data: loanSanctionResponse
+                        })
+                    }, err => {
+                        res.send({
+                            status: false,
+                            msg: "Invalid input details"
+                        })
+                    }).catch(err => {
+                        res.send({
+                            status: false,
+                            msg: "Something went wrong"
+                        })
+                    })
+                    // update customer collection end
+                }, err => {
+                    res.send({
+                        status: false,
+                        msg: "Invalid input details"
+                    })
+                }).catch(err => {
+                    res.send({
+                        status: false,
+                        msg: "Something went wrong"
+                    })
+                //save customer loan details end
+
+            }).catch(err => {
+                res.send({
+                    status: false,
+                    msg: "Something went wrong"
+                })
+            })
         })
-      })
     }
-  })
-
+    
+    //else part end
+    })
+    // request call end
  
 }
 
