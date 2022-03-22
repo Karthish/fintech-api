@@ -1519,6 +1519,127 @@ userMaster.generateToken = (req, res) => {
 
 }
 
+userMaster.earlySalaryLoanStatus = (req, res) => {
+  let token = generateUserToken();
+  console.log('user Token',token )
+  
+    let customerLoanReqObj = {};
+    customerLoanReqObj['cust_ref_id'] = req.body.cust_ref_id;
+    
+    return bankService.findCustomerLoanDetails(customerLoanReqObj)
+      .then(
+          (result) => {
+              userData = result;
+              //let token = generateUserToken();
+              let token;
+              var options = {
+                  method: "POST",
+                  url: "https://api.earlysalary.com/uat/esapi/generateToken",
+                  headers: {
+                      "Content-Type": `${config.karza.app_type}`
+            
+                  },
+                  body: {
+                      username: "AryaaoneUser",
+                      password: "Ary@@One#fd$23@df#32",
+                      applicationName: "WEB"
+                  },
+                  json: true,
+              };
+            
+              console.log(
+                  "+++++++++++++++++++++++++ Esalary Token request obj ++++++++++++++++++++++++++++++"
+              );
+              console.log(options.body);
+              request(options, function (error, response, body) {
+                if (error) {
+                    console.log("Esalay Error", error);
+                    res.send({
+                        status: false,
+                        msg: error,
+                    });
+                    return
+                } else {
+                    console.log(
+                        "+++++++++++++++++++++++++ Esalay Token response obj ++++++++++++++++++++++++++++++"
+                    );
+                    console.log(body);
+                    let response = body;
+                    if (
+                        response["statusCode"] == "200" ||
+                        response["statusCode"] == 200
+                    ) {
+                        token = response["token"];
+                        if(token){
+                          let statusAPIUrl = 'https://api.socialworth.in/peopleStrong/fetchcuststatus';
+                          let customerId = (userData ? (userData.loan_details ? (userData.loan_details.customerId ? userData.loan_details.customerId : '') : ''): '');
+                          let custRefNoword =  randomize("0", 25);
+                          
+                          var options = {
+                            method: "POST",
+                            url: statusAPIUrl,
+                            headers: {
+                                      "Content-Type": `${config.karza.app_type}`,
+                                      "token": token
+                                    },
+                            body: {
+                                customerId: customerId,
+                                custRefNoword: custRefNoword
+                            },
+                            json: true,
+                         };
+          
+                         console.log(
+                          "+++++++++++++++++++++++++ Esalary Status request obj ++++++++++++++++++++++++++++++"
+                      );
+                      console.log(options.body);
+                      request(options, function (error, response, body) {
+                          if (error) {
+                              console.log("Esalay Error", error);
+                              res.send({
+                                  status: false,
+                                  msg: error,
+                              });
+                              return
+                          } else {
+                              console.log(
+                                  "+++++++++++++++++++++++++ Esalay Statud response obj ++++++++++++++++++++++++++++++"
+                              );
+                              console.log(body);
+                              let response = body;
+                              if (
+                                  response["statusCode"] == "200" ||
+                                  response["statusCode"] == 200
+                              ) {
+                                  res.send({
+                                    status: true,
+                                    msg: "User Loan Application Details",
+                                    data: response
+                                  })
+                              }
+                          }
+                      })
+          
+                      }
+                    }
+                }
+            })
+
+           
+          }, err => {
+              res.send({
+                  status: false,
+                  msg: "User details not found"
+              })
+          }).catch(err => {
+              res.send({
+                  status: false,
+                  msg: "Something Went Wrong"
+              })
+      });
+}
+
+
 function getUserProfileData(userData, token, res) {
   //console.log('getUserProfileData', userData)
   console.log('token', token);
@@ -1553,10 +1674,9 @@ function getUserProfileData(userData, token, res) {
     method: "POST",
     url: "https://api.socialworth.in/betaProfileIngestion/profile-ingestion",
     headers: {
-      "Content-Type": `${config.karza.app_type}`,
-      "token": `${token}`
-      
-          },
+              "Content-Type": `${config.karza.app_type}`,
+              "token": `${token}`
+            },
 
          body: dynamicRequestObj,         
         json: true,
@@ -1589,14 +1709,36 @@ function getUserProfileData(userData, token, res) {
       customerLoanReqObj['cust_ref_id'] = userData.cust_ref_id;
       customerLoanReqObj['bank_ref_id'] = userData.bank_ref_id;
       customerLoanReqObj['loan_details'] = result;
-
+      let loanSanctionResponse = null;
       return bankService.findCustomerLoanDetails(customerLoanReqObj).then(resp => {
         return bankService.updateCustomerLoanDetails(customerLoanReqObj).then(resp => {
-          res.send({
-            status:true,
-            msg: 'Loan sanction details updated successfully',
-            data: resp
-          })
+          loanSanctionResponse = resp;
+          let customerTblUpdateObj = {};
+          customerTblUpdateObj['id'] = userData._id;
+          customerTblUpdateObj['target'] = "bankDetails";
+          customerTblUpdateObj['current_page'] = 'loan-offer-list';
+          customerTblUpdateObj['next_page'] = 'loan-offer-details';
+         
+    return userService
+        .findByIdAndUpdate(customerTblUpdateObj)
+        .then(
+            (result) => {
+              res.send({status: true,
+              msg:"Loan sanction details updated successfully",
+              data: loanSanctionResponse 
+            })
+            }, err => {
+              res.send({
+                status:false,
+                msg: 'Inavaid input details',
+              })
+            }).catch(err => {
+              res.send({
+                status:false,
+                msg: 'Something went wrong',
+              })
+            })
+          
         }, err => {
           res.send({
             status:false,
@@ -1610,11 +1752,48 @@ function getUserProfileData(userData, token, res) {
         })
       }, err => {
         return bankService.createCustomerLoanDetails(customerLoanReqObj).then(resp => {
+        //   res.send({
+        //     status:true,
+        //     msg: 'Loan sanction details saved successfully',
+        //     data: resp
+        //   })
+        let customerTblUpdateObj = {};
+          customerTblUpdateObj['id'] = userData._id;
+          customerTblUpdateObj['target'] = "bankDetails";
+          customerTblUpdateObj['current_page'] = 'loan-offer-list';
+          customerTblUpdateObj['next_page'] = 'loan-offer-details';
+          return userService
+        .findByIdAndUpdate(customerTblUpdateObj)
+        .then(
+            (result) => {
+              res.send({status: true,
+              msg:"Loan sanction details updated successfully",
+              data: loanSanctionResponse 
+            })
+            }, err => {
+              res.send({
+                status:false,
+                msg: 'Inavaid input details',
+              })
+            }).catch(err => {
+              res.send({
+                status:false,
+                msg: 'Something went wrong',
+              })
+            })
+          
+        }, err => {
           res.send({
-            status:true,
-            msg: 'Loan sanction details saved successfully',
-            data: resp
+            status:false,
+            msg: 'Inavaid input details',
           })
+        }).catch(err => {
+          res.send({
+            status:false,
+            msg: 'Something went wrong',
+          })
+        })
+
         }, err => {
           res.send({
             status:false,
@@ -1635,43 +1814,4 @@ function getUserProfileData(userData, token, res) {
 }
 
 
-userMaster.updateBankDetails = (req, res) => {
-  req.body.target = "bankDetails";
-  req.body.current_page = 'loan-offer-list';
-  req.body.next_page = 'loan-offer-details';
-  return userService
-      .findByIdAndUpdate(req.body)
-      .then(
-          (result) => {
-
-              return bankService.findOne({_id: req.body.bank_ref_id}).then(result => {
-                  res.send({
-                      status: true,
-                      msg: "Bank details updated",
-                      data: result,
-                  });
-              }, err => {
-                  res.send({status: false, msg: err.message})
-              }).catch((err) => {
-                  res.send({
-                      status: false,
-                      msg: "Unexpected Error",
-                  });
-              });
-
-          },
-          (err) => {
-              res.send({
-                  status: false,
-                  msg: "Invalid input details",
-              });
-          }
-      )
-      .catch((err) => {
-          res.send({
-              status: false,
-              msg: "Unexpected Error",
-          });
-      });
-};
 module.exports = userMaster;

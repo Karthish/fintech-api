@@ -5,6 +5,7 @@ var Schema = mongoose.Schema;
 var loan = require('../models/loanModel');
 var bank = require('../models/bankModel');
 var subcategory = require('../models/loanSubCategoryModel');
+var loanSanction = require('../models/loanSanctionModel');
 var customerSchema = new Schema({
     name                : {type: String},
     email_id            : {type: String},
@@ -60,7 +61,11 @@ var customerSchema = new Schema({
     previous_emi_amount : {type: String},
     current_due_status : {type: String},
     previous_due_status : {type: String},
-    office_pin_code : { type: Number}
+    office_pin_code : { type: Number},
+    loan_sanction_ref_id : { type: Schema.ObjectId, ref:"loanSanction"},
+    loan_application_number: { type: Number },
+    customer_ref_number:  { type: Number },
+    customer_ref_id:  { type: Number }
 
 });
 

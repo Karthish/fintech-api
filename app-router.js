@@ -77,7 +77,8 @@ router.post('/user/sanction/esign', user.esignVerification);
 router.post('/user/dashboard/update', user.updateDashboard);
 router.get('/user/dashboard/:id', user.getDashboard);
 
-router.post('/early/salary/token', user.generateToken)
+router.post('/early/salary/token', user.generateToken);
+router.post('/early/salary/status', user.earlySalaryLoanStatus)
 
 //Payslip Upload API
 var storage = multer.memoryStorage({
