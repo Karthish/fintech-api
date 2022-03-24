@@ -1730,7 +1730,7 @@ function getUserProfileData(userData, token, res) {
                             res.send({
                                 status: true,
                                 msg: "Loan sanction details updated successfully",
-                                data: loanSanctionResponse
+                                data: eSalaryResponse
                             })
                         }, err => {
                             res.send({
@@ -1776,7 +1776,7 @@ function getUserProfileData(userData, token, res) {
                         res.send({
                             status: true,
                             msg: "Loan sanction details updated successfully",
-                            data: loanSanctionResponse
+                            data: eSalaryResponse
                         })
                     }, err => {
                         res.send({

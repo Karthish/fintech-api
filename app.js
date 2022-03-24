@@ -24,6 +24,13 @@ const config = require("./config/config")[process.env.NODE_ENV || "dev"];
 const port = config.node_port;
 mongoose.Promise = global.Promise;
 
+const cheerio = require('cheerio');
+// const $ = cheerio.load('<h2 class="title">Hello world</h2>');
+// $('h2.title').text('Hello there!');
+// $('h2').addClass('welcome');
+
+// console.log('html',$.html());
+
 app.use(favicon(__dirname + "/fav.ico"));
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({limit: '50mb',extended: false,
