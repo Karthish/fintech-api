@@ -1520,17 +1520,26 @@ userMaster.generateToken = (req, res) => {
 }
 
 userMaster.earlySalaryLoanStatus = (req, res) => {
-  let token = generateUserToken();
-  console.log('user Token',token )
+  //let token = generateUserToken();
+  //console.log('user Token',token )
   
     let customerLoanReqObj = {};
     customerLoanReqObj['cust_ref_id'] = req.body.cust_ref_id;
     
     return bankService.findCustomerLoanDetails(customerLoanReqObj)
       .then(
-          (result) => {
+          result => {
               userData = result;
+              console.log('userdata in loan sanction', userData);
               //let token = generateUserToken();
+              if(!userData.loan_details.customerId ) {
+                  res.send({
+                      status: false,
+                      msg: "customer details are not found",
+                      data: {}
+                  })
+                  return
+              }
               let token;
               var options = {
                   method: "POST",
@@ -1607,16 +1616,12 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
                               );
                               console.log(body);
                               let response = body;
-                              if (
-                                  response["statusCode"] == "200" ||
-                                  response["statusCode"] == 200
-                              ) {
                                   res.send({
                                     status: true,
                                     msg: "User Loan Application Details",
                                     data: response
                                   })
-                              }
+                              
                           }
                       })
           
