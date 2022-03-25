@@ -246,6 +246,7 @@ userMaster.findByIdAndUpdate = req => {
                     console.log('err', err);
                     return reject(err)
                 }else{
+                   // console.log('user', user);
                     return resolve(user)
                 }
             })

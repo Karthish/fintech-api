@@ -217,11 +217,11 @@ router.post('/cancelledcheck/upload', cancelledChequeUpload, function(req, res){
                 reqObj['next_page'] = 'post-esign';
                 console.log('reqObj for update', reqObj);
                 userService.findByIdAndUpdate(reqObj).then(resp => {
-                res.json({ "status": true, "msg": "Cancelled Cheque Uploaded SuceesFully", data: ResponseData});
+                res.send({ "status": true, "msg": "Cancelled Cheque Uploaded SuceesFully", data: ResponseData});
                 }, err => {
-                  res.send({ "status": false, msg: err.message });
+                  res.send({ "status": false, msg: err });
                 }).catch(err => {
-                  res.send({ "status": false, msg: err.message });
+                  res.send({ "status": false, msg: err });
                 })
               }
             }
@@ -236,7 +236,9 @@ router.post('/cancelledcheck/upload', cancelledChequeUpload, function(req, res){
 })
 
 router.post('/empId/upload', empIdUpload, function(req, res){
-  var extraData = JSON.parse(req.body.id);
+  console.log('/empId/upload', req.body.empid_esign);
+  var extraData = JSON.parse(req.body.empid_esign);
+  console.log('/empId/upload id', extraData);
   const file = req.files;
   return configService.findAll({}).then(result => {
    // console.log('config data', result[0]);
@@ -290,7 +292,7 @@ router.post('/empId/upload', empIdUpload, function(req, res){
 })
 
 router.post('/bankstatement/upload', bankstatement, function(req, res){
-  var extraData = JSON.parse(req.body.id);
+  var extraData = JSON.parse(req.body.accstatement_esign);
   const file = req.files;
   return configService.findAll({}).then(result => {
    // console.log('config data', result[0]);
