@@ -859,7 +859,7 @@ userMaster.updateBankDetails = (req, res) => {
                         data: result,
                     });
                 }, err => {
-                    res.send({status: false, msg: err.message})
+                    res.send({status: false, msg: err})
                 }).catch((err) => {
                     res.send({
                         status: false,
@@ -891,7 +891,7 @@ userMaster.getBankDetails = (req, res) => {
             data: result,
         });
     }, err => {
-        res.send({status: false, msg: err.message})
+        res.send({status: false, msg: err})
     }).catch((err) => {
         res.send({
             status: false,
@@ -1535,7 +1535,7 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
               if(!userData.loan_details.customerId ) {
                   res.send({
                       status: false,
-                      msg: "customer details are not found",
+                      msg: userData.loan_details.reason,
                       data: {}
                   })
                   return
@@ -1722,7 +1722,7 @@ function getUserProfileData(userData, token, res) {
                     customerTblUpdateObj['id'] = userData._id;
                     customerTblUpdateObj['target'] = "bankDetails";
                     customerTblUpdateObj['current_page'] = 'loan-offer-list';
-                    customerTblUpdateObj['next_page'] = 'loan-offer-details';
+                    customerTblUpdateObj['next_page'] = 'early-salary-dashboard';
                     customerTblUpdateObj['customer_ref_id'] = eSalaryResponse.customerid;
                     customerTblUpdateObj['loan_sanction_ref_id'] = resp._id;
                     customerTblUpdateObj['loan_application_number'] = loanApplicationNumber;

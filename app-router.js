@@ -89,11 +89,7 @@ var storage = multer.memoryStorage({
 
 var multipleUpload = multer({ storage: storage }).array('payslip');
 router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
-  console.log('id', req.params.id);
-  //req.params.id = '61701b77e6e218498cfa29e9';
   const file = req.files;
-  console.log('files', file.length);
-  console.log('files', file);
   if(!file.length){
     res.send({status:false, msg:"Last 3 months payslips are required"})
   }
@@ -119,7 +115,6 @@ router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
   }
 
     return configService.findAll({}).then(result => {
-    console.log('config data', result[0]);
     let credentials = result[0];
     let s3bucket = new aws.S3({
       accessKeyId: credentials.accessKeyId,
@@ -132,7 +127,6 @@ router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
         var ResponseData = [];
      
   file.map((item) => {
-    console.log('file map item', item)
         var params = {
           Bucket: credentials.bucket,
           Key: item.originalname,
@@ -144,7 +138,6 @@ router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
            res.json({ "status": false, "msg": err});
           }else{
               ResponseData.push(data);
-              console.log('uploaded files', ResponseData);
               if(ResponseData.length == file.length){
                 var reqObj = {};
                 reqObj['id'] =  req.params.id;
@@ -152,13 +145,12 @@ router.put('/payslip/upload/:id',multipleUpload, function (req, res) {
                 reqObj['target'] = 'payslipUpload';
                 reqObj['current_page'] = 'cust-details';
                 reqObj['next_page'] = 'loan-offer-list';
-                console.log('reqObj for update', reqObj);
                 userService.findByIdAndUpdate(reqObj).then(resp => {
                 res.json({ "status": true, "msg": "File Uploaded SuceesFully", data: ResponseData});
                 }, err => {
-                  res.send({ "status": false, msg: err.message });
+                  res.send({ "status": false, msg: err });
                 }).catch(err => {
-                  res.send({ "status": false, msg: err.message });
+                  res.send({ "status": false, msg: err });
                 })
               }
             }
@@ -177,12 +169,9 @@ var empIdUpload = multer({storage: storage}).array('empId');
 var bankstatement = multer({storage: storage}).array('bankstatement');
 
 router.post('/cancelledcheck/upload', cancelledChequeUpload, function(req, res){
-  console.log('req body date', req.body.eSingData);
   var extraData = JSON.parse(req.body.eSingData);
-  console.log('extraData',extraData);
   const file = req.files;
   return configService.findAll({}).then(result => {
-   // console.log('config data', result[0]);
     let credentials = result[0];
     let s3bucket = new aws.S3({
       accessKeyId: credentials.accessKeyId,
@@ -215,7 +204,6 @@ router.post('/cancelledcheck/upload', cancelledChequeUpload, function(req, res){
                 reqObj['target'] = 'postEsign';
                 reqObj['current_page'] = 'post-esign';
                 reqObj['next_page'] = 'post-esign';
-                console.log('reqObj for update', reqObj);
                 userService.findByIdAndUpdate(reqObj).then(resp => {
                 res.send({ "status": true, "msg": "Cancelled Cheque Uploaded SuceesFully", data: ResponseData});
                 }, err => {
@@ -236,12 +224,9 @@ router.post('/cancelledcheck/upload', cancelledChequeUpload, function(req, res){
 })
 
 router.post('/empId/upload', empIdUpload, function(req, res){
-  console.log('/empId/upload', req.body.empid_esign);
   var extraData = JSON.parse(req.body.empid_esign);
-  console.log('/empId/upload id', extraData);
   const file = req.files;
   return configService.findAll({}).then(result => {
-   // console.log('config data', result[0]);
     let credentials = result[0];
     let s3bucket = new aws.S3({
       accessKeyId: credentials.accessKeyId,
@@ -271,13 +256,12 @@ router.post('/empId/upload', empIdUpload, function(req, res){
                 reqObj['target'] = 'postEsign';
                 reqObj['current_page'] = 'post-esign';
                 reqObj['next_page'] = 'post-esign';
-                console.log('reqObj for update', reqObj);
                 userService.findByIdAndUpdate(reqObj).then(resp => {
                 res.json({ "status": true, "msg": "Employee ID Uploaded SuceesFully", data: ResponseData});
                 }, err => {
-                  res.send({ "status": false, msg: err.message });
+                  res.send({ "status": false, msg: err });
                 }).catch(err => {
-                  res.send({ "status": false, msg: err.message });
+                  res.send({ "status": false, msg: err });
                 })
               }
             }
@@ -295,7 +279,6 @@ router.post('/bankstatement/upload', bankstatement, function(req, res){
   var extraData = JSON.parse(req.body.accstatement_esign);
   const file = req.files;
   return configService.findAll({}).then(result => {
-   // console.log('config data', result[0]);
     let credentials = result[0];
     let s3bucket = new aws.S3({
       accessKeyId: credentials.accessKeyId,
@@ -325,7 +308,6 @@ router.post('/bankstatement/upload', bankstatement, function(req, res){
                 reqObj['target'] = 'postEsign';
                 reqObj['current_page'] = 'post-esign';
                 reqObj['next_page'] = 'dashboard';
-                console.log('reqObj for update', reqObj);
                 userService.findByIdAndUpdate(reqObj).then(resp => {
                 res.json({ "status": true, "msg": "Bank Statemnet Uploaded SuceesFully", data: ResponseData});
                 }, err => {
@@ -344,158 +326,6 @@ router.post('/bankstatement/upload', bankstatement, function(req, res){
    res.send({ "status":false, msg:"Something went wrong"})
  })
 })
-
-
-let postEsignUpload = multer({storage: storage}).fields([{ name: 'cancelledcheck', maxCount: 1 }, { name: 'empId', maxCount: 2 },{name: 'bankstatement', maxCount: 3}]);
-var bucketFileLength = [];
-//const upload = multer({ dest: './uploads/' });
-//const cpUpload = upload.fields([{ name: 'cancelledcheck', maxCount: 1 }, { name: 'empId', maxCount: 2 },{name: 'bankstatement', maxCount: 1}]);
-router.post('/post/esign', postEsignUpload, function (req, res, next) {
-  // e.g.
-  //  req.files['avatar'][0] -> File
-  //  req.files['gallery'] -> Array
-  //
-  // req.body will contain the text fields, if there were any
-console.log('uploaded files',req.files);
-console.log('additional data',req.body.eSingData);
-var fileArray = [];
-var uplodedFilelength = [];
-
-if(req.files.cancelledcheck.length ){
-  req.files.cancelledcheck.forEach(function(file){
-    uplodedFilelength.push(file)
-  })
-}
-
-if(req.files && req.files.empId && req.files.empId.length) {
-  req.files.empId.forEach(function(file){
-    uplodedFilelength.push(file)
-  })
-}
-
-if(req.files && req.files.bankstatement && req.files.bankstatement.length) {
-  req.files.bankstatement.forEach(function(file){
-    uplodedFilelength.push(file)
-  })
-}
-  if(req.files.cancelledcheck.length){
-     //uploadfilesinbucket(req.files.cancelledcheck, 'cancelledCheck', req, uplodedFilelength, res);
-     const p1 = new Promise((resolve, reject) => {
-      setTimeout(() => {
-          console.log('The first promise has resolved');
-  
-          resolve(10);
-      }, 1 * 1000);
-  
-  });
-  }
-
-  if(req.files && req.files.empId && req.files.empId.length) {
-    //uploadfilesinbucket(req.files.empId, 'empId', req, uplodedFilelength, res);
-    const p2 = new Promise((resolve, reject) => {
-      setTimeout(() => {
-          console.log('The second promise has resolved');
-          resolve(20);
-      }, 2 * 1000);
-  });
-
-  }
-  let bankStatement = (req.files? (req.files.bankstatement ? (req.files.bankstatement.length ? req.files.bankstatement.length : '') : '') : '');
-  if(bankStatement) {
-    //uploadfilesinbucket(bankStatement,'bankStatement',req, uplodedFilelength, res);
-    const p2 = new Promise((resolve, reject) => {
-      setTimeout(() => {
-          console.log('The second promise has resolved');
-          resolve(20);
-      }, 2 * 1000);
-  });
-
-  }
-
-  Promise.all([p1, p2, p3])
-  .then(results => {
-      //const total = results.reduce((p, c) => p + c);
-
-      console.log(`Results: ${results}`);
-      console.log(`Total: ${total}`);
-  });
-
-
-})
-
-function uploadfilesinbucket(files, flag, req, uplodedFilelength, res){
-  console.log('uploadfilesinbucket',files);
- // console.log('flag',flag);
-
-  return configService.findAll({}).then(result => {
-   // console.log('config data', result[0]);
-    let credentials = result[0];
-    let s3bucket = new aws.S3({
-      accessKeyId: credentials.accessKeyId,
-      secretAccessKey: credentials.secretAccessKey,
-      Bucket: credentials.bucket
-    });
-    var result;
-  s3bucket.createBucket(function () {
-        var ResponseData = [];
-        files.map((item) => {
-         // console.log('item', item); 
-          bucketFileLength.push(item)
-        var params = {
-          Bucket: credentials.bucket,
-          Key: item.originalname,
-          Body: item.buffer,
-          ACL: credentials.acl
-    };
-  s3bucket.upload(params, function (err, data) {
-    //console.log('uploaded data',data)
-          if (err) {
-           res.json({ "status": false, "msg": err});
-          }else{
-              ResponseData.push(data);
-             
-              var reqObj = {};
-              reqObj['id'] =  req.body.id;
-              reqObj['id'] =  "619d2ed60261fc51f88c60f9";
-              if(flag == 'cancelledCheck'){
-                reqObj['cancelled_cheque_doc'] = ResponseData;
-              }
-              
-              if(flag == 'empId'){
-                reqObj['employee_id_doc'] = ResponseData;
-              }
-
-              if(flag == 'bankStatement'){
-                reqObj['bank_statement_doc'] = ResponseData;
-              }
-              
-              reqObj['target'] = 'postEsign';
-              reqObj['current_page'] = 'post-esign';
-              reqObj['next_page'] = 'dashboard';
-              //console.log('reqObj for update', reqObj);
-              userService.findByIdAndUpdate(reqObj).then(resp => {
-                if(uplodedFilelength.length == bucketFileLength.length){
-                  console.log(uplodedFilelength.length, bucketFileLength.length)
-                  res.send({ status:true, msg:"Files updated successfully", data:ResponseData})
-                }
-              }, err => {
-                res.send({ status:false, msg:err})
-              }).catch(err => {
-                res.send({ status:false, msg:err})
-              })
-              
-            }
-         });
-       });
-     });
- }, err => {
-   //res.send({ "status":false, msg:"Invalid config details"})
-   console.log('err', err)
- }).catch(err => {
-  console.log('catch err', err)
-   //res.send({ "status":false, msg:"Something went wrong"})
- })
-}
 
 module.exports = router;
 
