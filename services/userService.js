@@ -237,6 +237,8 @@ userMaster.findByIdAndUpdate = req => {
                 query = {$set: req}; 
             } else if(req.target == 'dashboard'){
                 query = {$set: req}; 
+            } else if(req.target == 'post-eSign-page') {
+                query = { $set: req}
             }
 
             console.log('req', req);

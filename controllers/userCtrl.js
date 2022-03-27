@@ -883,6 +883,36 @@ userMaster.updateBankDetails = (req, res) => {
         });
 };
 
+userMaster.updateTargetPage = (req, res) => {
+    req.body.target = "post-eSign-page";
+    req.body.current_page = 'loan-offer-details';
+    req.body.next_page = 'post-esign-process';
+    return userService
+        .findByIdAndUpdate(req.body)
+        .then(
+            (result) => {
+
+                res.send({
+                    status: true,
+                    msg: "User details updated",
+                    data: result,
+                });
+            },
+            (err) => {
+                res.send({
+                    status: false,
+                    msg: "Invalid input details",
+                });
+            }
+        )
+        .catch((err) => {
+            res.send({
+                status: false,
+                msg: "Unexpected Error",
+            });
+        });
+};
+
 userMaster.getBankDetails = (req, res) => {
     return bankService.findOne({_id: req.body.bank_ref_id}).then(result => {
         res.send({
@@ -1536,7 +1566,7 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
                   res.send({
                       status: false,
                       msg: userData.loan_details.reason,
-                      data: {}
+                      data: userData
                   })
                   return
               }

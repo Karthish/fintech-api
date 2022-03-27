@@ -74,6 +74,8 @@ router.post('/user/sanction/attachment', user.sanctionAttachment);
 
 router.post('/user/sanction/esign', user.esignVerification);
 
+router.post('/user/target/update', user.updateTargetPage);
+
 router.post('/user/dashboard/update', user.updateDashboard);
 router.get('/user/dashboard/:id', user.getDashboard);
 
@@ -203,7 +205,7 @@ router.post('/cancelledcheck/upload', cancelledChequeUpload, function(req, res){
                 reqObj['cancelled_cheque_doc'] = ResponseData;
                 reqObj['target'] = 'postEsign';
                 reqObj['current_page'] = 'post-esign';
-                reqObj['next_page'] = 'post-esign';
+                reqObj['next_page'] = 'dashboard';
                 userService.findByIdAndUpdate(reqObj).then(resp => {
                 res.send({ "status": true, "msg": "Cancelled Cheque Uploaded SuceesFully", data: ResponseData});
                 }, err => {
@@ -255,7 +257,7 @@ router.post('/empId/upload', empIdUpload, function(req, res){
                 reqObj['employee_id_doc'] = ResponseData;
                 reqObj['target'] = 'postEsign';
                 reqObj['current_page'] = 'post-esign';
-                reqObj['next_page'] = 'post-esign';
+                reqObj['next_page'] = 'dashboard';
                 userService.findByIdAndUpdate(reqObj).then(resp => {
                 res.json({ "status": true, "msg": "Employee ID Uploaded SuceesFully", data: ResponseData});
                 }, err => {
