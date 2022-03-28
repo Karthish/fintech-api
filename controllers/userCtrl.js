@@ -1552,7 +1552,7 @@ userMaster.generateToken = (req, res) => {
 userMaster.earlySalaryLoanStatus = (req, res) => {
   //let token = generateUserToken();
   //console.log('user Token',token )
-  
+  let userData;
     let customerLoanReqObj = {};
     customerLoanReqObj['cust_ref_id'] = req.body.cust_ref_id;
     
@@ -1562,7 +1562,7 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
               userData = result;
               console.log('userdata in loan sanction', userData);
               //let token = generateUserToken();
-              if(!userData.loan_details.customerId ) {
+              if(!userData.loan_details.customerid ) {
                   res.send({
                       status: false,
                       msg: userData.loan_details.reason,
@@ -1611,7 +1611,7 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
                         token = response["token"];
                         if(token){
                           let statusAPIUrl = 'https://api.socialworth.in/peopleStrong/fetchcuststatus';
-                          let customerId = (userData ? (userData.loan_details ? (userData.loan_details.customerId ? userData.loan_details.customerId : '') : ''): '');
+                          let customerId = (userData ? (userData.loan_details ? (userData.loan_details.customerid ? userData.loan_details.customerid : '') : ''): '');
                           let custRefNoword =  randomize("0", 25);
                           
                           var options = {
@@ -1646,6 +1646,7 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
                               );
                               console.log(body);
                               let response = body;
+                              response['customer-details'] = userData;
                                   res.send({
                                     status: true,
                                     msg: "User Loan Application Details",
@@ -1756,6 +1757,7 @@ function getUserProfileData(userData, token, res) {
                     customerTblUpdateObj['customer_ref_id'] = eSalaryResponse.customerid;
                     customerTblUpdateObj['loan_sanction_ref_id'] = resp._id;
                     customerTblUpdateObj['loan_application_number'] = loanApplicationNumber;
+                    customerTblUpdateObj['bank_ref_id'] = userData['bank_ref_id'];
 
                     //update customer collection start
                     return userService
@@ -1805,6 +1807,7 @@ function getUserProfileData(userData, token, res) {
                     customerTblUpdateObj['customer_ref_id'] = eSalaryResponse.customerid;
                     customerTblUpdateObj['loan_sanction_ref_id'] = resp._id;
                     customerTblUpdateObj['loan_application_number'] = loanApplicationNumber;
+                    customerTblUpdateObj['bank_ref_id'] = userData['bank_ref_id'];
 
                     //customer collection update start
                     return userService.findByIdAndUpdate(customerTblUpdateObj).then(result => {
