@@ -1646,7 +1646,7 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
                               );
                               console.log(body);
                               let response = body;
-                              response['customer-details'] = userData;
+                              response['customer_details'] = userData;
                                   res.send({
                                     status: true,
                                     msg: "User Loan Application Details",
