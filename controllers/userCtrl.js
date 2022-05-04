@@ -1691,14 +1691,29 @@ function getUserProfileData(userData, token, res) {
                                             emailid: userData.email_id,
                                             profession: userData.professional_type,
                                             address1: userData.aadhar_details.address.combinedAddress,
+                                            address2: userData.aadhar_details.address.splitAddress.street,
+                                            city:  userData.aadhar_details.address.splitAddress.vtcName,
+                                            state: userData.aadhar_details.address.splitAddress.state,
                                             pincode: +userData.aadhar_details.address.splitAddress.pincode,
+                                            maritalstatus:  userData.marital_status,
+                                            addresstype: userData.address_type, //"Self-Owned",
+                                            fathername: userData.father_name,
+                                            mothername: userData.mothers_maiden_name,
                                             finance: {
                                                 pan: userData.pan_no
                                             },
                                             employeedetails: {
+                                                employername: userData.organization_name,
                                                 officepincode: +userData.aadhar_details.address.splitAddress.pincode,
-                                                salary: +userData.monthly_income
-                                            }
+                                                salary: +userData.monthly_income,
+                                                officeaddress:"",
+                                                dateofjoining: "",
+                                                designation: "",
+                                            },
+                                            product: {
+                                                type: "3"
+                                                }
+                                                
                                         }
                                     }
 
