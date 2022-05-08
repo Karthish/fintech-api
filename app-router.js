@@ -80,7 +80,9 @@ router.post('/user/dashboard/update', user.updateDashboard);
 router.get('/user/dashboard/:id', user.getDashboard);
 
 router.post('/early/salary/token', user.generateToken);
-router.post('/early/salary/status', user.earlySalaryLoanStatus)
+router.post('/early/salary/status', user.earlySalaryLoanStatus);
+
+router.post('/user/uan/otp/verification', user.uanOtpVerification)
 
 //Payslip Upload API
 var storage = multer.memoryStorage({

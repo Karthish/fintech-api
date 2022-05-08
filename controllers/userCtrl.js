@@ -1479,7 +1479,7 @@ userMaster.generateToken = (req, res) => {
     //   }
 
     //req.body.id = req.body.id ? req.body.id : "6220ede1014e060ee134b0e4";
-    req.body.cust_ref_id = req.body.cust_ref_id ? req.body.cust_ref_id : "6220ede1014e060ee134b0e4";
+    req.body.cust_ref_id = req.body.cust_ref_id ? req.body.cust_ref_id : "6251183ad0abce74b8c627da";
     let token;
     var options = {
         method: "POST",
@@ -1528,7 +1528,8 @@ userMaster.generateToken = (req, res) => {
                                     userData = result;
                                     userData['cust_ref_id'] = req.body.cust_ref_id;
                                     userData['bank_ref_id'] = req.body.bank_ref_id;
-                                    getUserProfileData(userData, token, res)
+                                   // getUserProfileData(userData, token, res);
+                                    generateUANOtp(userData, token, res);
                                  
                                 }, err => {
                                     res.send({
@@ -1676,9 +1677,14 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
 }
 
 
-function getUserProfileData(userData, token, res) {
+function getUserProfileData(userData, token, UANResponse, res) {
   //console.log('getUserProfileData', userData)
   console.log('token', token);
+  let firstDate = UANResponse.est_details[UANResponse.est_details.length - 1].doj_epf.split("-")[2];
+  const d = new Date();
+  let year = d.getFullYear();
+  let yearOfExperience = year - firstDate;
+
 
                           //dynamic Request from DB 
                           let dynamicRequestObj = {
@@ -1697,7 +1703,7 @@ function getUserProfileData(userData, token, res) {
                                             pincode: +userData.aadhar_details.address.splitAddress.pincode,
                                             maritalstatus:  userData.marital_status,
                                             addresstype: userData.address_type, //"Self-Owned",
-                                            fathername: userData.father_name,
+                                            fathername: UANResponse ? ( UANResponse.result? (UANResponse.result.employee_details ?  (UANResponse.result.employee_details.father_name ? UANResponse.result.employee_details.father_name: ''):''):''):'' ,
                                             mothername: userData.mothers_maiden_name,
                                             finance: {
                                                 pan: userData.pan_no
@@ -1706,9 +1712,11 @@ function getUserProfileData(userData, token, res) {
                                                 employername: userData.organization_name,
                                                 officepincode: +userData.aadhar_details.address.splitAddress.pincode,
                                                 salary: +userData.monthly_income,
-                                                officeaddress:"",
-                                                dateofjoining: "",
-                                                designation: "",
+                                                officeaddress: UANResponse ? ( UANResponse.est_details[0]? (UANResponse.est_details[0].office?UANResponse.est_details[0].office: '') : '') : '',
+                                                dateofjoining:  UANResponse ? ( UANResponse.est_details[0]? (UANResponse.est_details[0].doj_epf?UANResponse.est_details[0].doj_epf: '') : '') : '',
+                                                designation: userData.designation,
+                                                yoe: yearOfExperience,
+                                               // yoe: 10,
                                             },
                                             product: {
                                                 type: "3"
@@ -1870,5 +1878,128 @@ function getUserProfileData(userData, token, res) {
  
 }
 
+function generateUANOtp(userData, token, res){
+    var options = {
+        method: "POST",
+        url: "https://testapi.karza.in/v2/epf-get-otp",
+        headers: {
+            "Content-Type": `${config.karza.app_type}`,
+            "x-karza-key": `${config.karza.auth_key}`
+
+        },
+        body: {
+            "consent": "Y",
+            "uan": "", //100946405415
+            "mobile_no": userData.mobile_no ? userData.mobile_no : ""
+          },
+        json: true,
+    };
+
+    console.log('UAN otp request obj', options.body);
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log("Esalay Error", error);
+            res.send({
+                status: false,
+                msg: error,
+            });
+            return
+        } else {
+            console.log(
+                "+++++++++++++++++++++++++ epf-get-otp response obj ++++++++++++++++++++++++++++++"
+            );
+            console.log(body);
+            let response = body;
+            if(response.status-code == 101 || response.status-code == "101"){
+                response.token = token;
+                res.send({
+                    status: true,
+                    msg: "UAN otp response",
+                    data: response
+                });
+            }else {
+                res.send({
+                    status: false,
+                    msg: "UAN otp response",
+                    data: response
+                });
+            }
+           
+        }
+    })
+}
+
+userMaster.uanOtpVerification = (req, res) => {
+    let token = req.body.token ? req.body.token : '';
+    //req.body.request_id = '';
+    //req.body.otp = '';
+    //req.body.cust_ref_id = '';
+
+    var options = {
+        method: "POST",
+        url: "https://testapi.karza.in/v2/epf-get-passbook",
+        headers: {
+            "Content-Type": `${config.karza.app_type}`,
+            "x-karza-key": `${config.karza.Au}`
+
+        },
+        body: {
+            "request_id":  req.body.request_id,
+            "otp": req.body.otp,
+            "is_pdf_required": "n",
+            "partial_data": "n",
+            "epf_balance": "n"
+          },
+        json: true,
+    };
+
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log("Esalay Error", error);
+            res.send({
+                status: false,
+                msg: error,
+            });
+            return
+        } else {
+            console.log(
+                "+++++++++++++++++++++++++ epf-get-passbook response obj ++++++++++++++++++++++++++++++"
+            );
+            console.log(body);
+            let UANResponse = body;
+            if(UANResponse.status-code == 101 || UANResponse.status-code == "101"){
+                return userService
+                            .getUserById({_id: req.body.cust_ref_id})
+                            .then(
+                                (result) => {
+                                    userData = result;
+                                    userData['cust_ref_id'] = req.body.cust_ref_id;
+                                    userData['bank_ref_id'] = req.body.bank_ref_id ? req.body.bank_ref_id : '' ;
+                                    getUserProfileData(userData, token, UANResponse, res);
+                                   // generateUANOtp(userData, token, res);
+                                 
+                                }, err => {
+                                    res.send({
+                                        status: false,
+                                        msg: "User details not found"
+                                    })
+                                }).catch(err => {
+                                res.send({
+                                    status: false,
+                                    msg: "Something Went Wrong"
+                                })
+                            });
+            }else {
+                res.send({
+                    status: false,
+                    msg: "UAN otp response",
+                    data: response
+                });
+            }
+        }
+    })
+
+
+}
 
 module.exports = userMaster;

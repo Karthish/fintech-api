@@ -68,7 +68,8 @@ var customerSchema = new Schema({
     customer_ref_id:  { type: Number },
     address_type: { type: String},
     marital_status: { type: String},
-    father_name: { type: String}
+    father_name: { type: String},
+    designation: { type: String}
 
 });
 
