@@ -1910,7 +1910,7 @@ function generateUANOtp(userData, token, res){
             );
             console.log(body);
             let response = body;
-            if(response.status-code == 101 || response.status-code == "101"){
+            if(response['status-code'] == 101 || response['status-code'] == "101"){
                 response.token = token;
                 res.send({
                     status: true,
