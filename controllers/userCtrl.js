@@ -1967,7 +1967,7 @@ userMaster.uanOtpVerification = (req, res) => {
             );
             console.log(body);
             let UANResponse = body;
-            if(UANResponse.status-code == 101 || UANResponse.status-code == "101"){
+            if(UANResponse['status-code'] == 101 || UANResponse['status-code'] == "101"){
                 return userService
                             .getUserById({_id: req.body.cust_ref_id})
                             .then(
