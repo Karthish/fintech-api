@@ -1679,11 +1679,16 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
 
 function getUserProfileData(userData, token, UANResponse, res) {
   //console.log('getUserProfileData', userData)
-  console.log('token', token);
-  let firstDate = UANResponse.est_details[UANResponse.est_details.length - 1].doj_epf.split("-")[2];
-  const d = new Date();
-  let year = d.getFullYear();
-  let yearOfExperience = year - firstDate;
+  console.log('token data', token);
+//   let firstDate = UANResponse.est_details[UANResponse.est_details.length - 1].doj_epf.split("-")[2];
+//   console.log('firstDate', firstDate);
+//   const d = new Date();
+//   let year = d.getFullYear();
+//   let yearOfExperience = year - firstDate;
+//   console.log('yearOfExperience', yearOfExperience);
+//console.log('getUserProfileData', userData)
+console.log('UAN est_details',  UANResponse.result.est_details[0]);
+console.log('UANResponse employee_details',  UANResponse.result.employee_details);
 
 
                           //dynamic Request from DB 
@@ -1712,11 +1717,11 @@ function getUserProfileData(userData, token, UANResponse, res) {
                                                 employername: userData.organization_name,
                                                 officepincode: +userData.aadhar_details.address.splitAddress.pincode,
                                                 salary: +userData.monthly_income,
-                                                officeaddress: UANResponse ? ( UANResponse.est_details[0]? (UANResponse.est_details[0].office?UANResponse.est_details[0].office: '') : '') : '',
-                                                dateofjoining:  UANResponse ? ( UANResponse.est_details[0]? (UANResponse.est_details[0].doj_epf?UANResponse.est_details[0].doj_epf: '') : '') : '',
+                                                officeaddress: UANResponse ? ( UANResponse.result.est_details[0]? (UANResponse.result.est_details[0].office?UANResponse.result.est_details[0].office: '') : '') : '',
+                                                dateofjoining:  UANResponse ? ( UANResponse.result.est_details[0]? (UANResponse.result.est_details[0].doj_epf?UANResponse.result.est_details[0].doj_epf: '') : '') : '',
                                                 designation: userData.designation,
-                                                yoe: yearOfExperience,
-                                               // yoe: 10,
+                                                //yoe: yearOfExperience ?  yearOfExperience : 7,
+                                                yoe: 10,
                                             },
                                             product: {
                                                 type: "3"
@@ -1726,7 +1731,7 @@ function getUserProfileData(userData, token, UANResponse, res) {
                                     }
 
                                   
-                                   // console.log('request obj', request)
+                                    console.log('dynamicRequestObj ', dynamicRequestObj)
 
                                    
   var options = {
@@ -1889,13 +1894,13 @@ function generateUANOtp(userData, token, res){
         },
         body: {
             "consent": "Y",
-            "uan": "", //100946405415
-            "mobile_no": userData.mobile_no ? userData.mobile_no : ""
+            "uan": "100946405415", //100946405415
+            "mobile_no": "" //9952538003
           },
         json: true,
     };
 
-    console.log('UAN otp request obj', options.body);
+    console.log('UAN otp request obj', options);
     request(options, function (error, response, body) {
         if (error) {
             console.log("Esalay Error", error);
@@ -1934,25 +1939,24 @@ userMaster.uanOtpVerification = (req, res) => {
     //req.body.request_id = '';
     //req.body.otp = '';
     //req.body.cust_ref_id = '';
+    console.log('Req body',req.body);
 
     var options = {
         method: "POST",
         url: "https://testapi.karza.in/v2/epf-get-passbook",
         headers: {
             "Content-Type": `${config.karza.app_type}`,
-            "x-karza-key": `${config.karza.Au}`
+            "x-karza-key": `${config.karza.auth_key}`
 
         },
         body: {
             "request_id":  req.body.request_id,
-            "otp": req.body.otp,
-            "is_pdf_required": "n",
-            "partial_data": "n",
-            "epf_balance": "n"
+            "otp": req.body.otp
           },
         json: true,
     };
 
+    console.log('req options', options )
     request(options, function (error, response, body) {
         if (error) {
             console.log("Esalay Error", error);
@@ -1965,7 +1969,8 @@ userMaster.uanOtpVerification = (req, res) => {
             console.log(
                 "+++++++++++++++++++++++++ epf-get-passbook response obj ++++++++++++++++++++++++++++++"
             );
-            console.log(body);
+            console.log('body',body);
+           // console.log('body',body.result.est_details);
             let UANResponse = body;
             if(UANResponse['status-code'] == 101 || UANResponse['status-code'] == "101"){
                 return userService
