@@ -1894,8 +1894,8 @@ function generateUANOtp(userData, token, res){
         },
         body: {
             "consent": "Y",
-            "uan": "100946405415", //100946405415
-            "mobile_no": "" //9952538003
+            "uan": "", //100946405415
+            "mobile_no": userData.mobile_no //9952538003
           },
         json: true,
     };
