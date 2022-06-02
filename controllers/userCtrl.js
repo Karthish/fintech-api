@@ -429,7 +429,12 @@ userMaster.aadharVerification = function (req, res) {
         return
     }
     //return userService.findOne({_id:reqObj.id}).then(result => {
-    let currentTime = new Date().getTime().toString().substr(0, 10);
+    let currentTime = new Date().getTime().toString();
+    console.log('current time',currentTime);
+
+    let currentDate = new Date();
+    let timestamp = Math.floor( currentDate / 1000 );
+    console.log("timestamp", timestamp)
     let caseId = randomize("0", 6);
 
     var options = {
@@ -445,7 +450,7 @@ userMaster.aadharVerification = function (req, res) {
                 "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0",
             consent: "Y",
             name: reqObj.pan_name ? reqObj.pan_name : 'testUser',
-            consentTime: currentTime,
+            consentTime: timestamp.toString(),
             consentText: "Consent accepted",
             clientData: {caseId: caseId},
         },
@@ -463,7 +468,14 @@ userMaster.aadharVerification = function (req, res) {
             "+++++++++++++++++++++++++ aadhaar-consent Response obj ++++++++++++++++++++++++++++++"
         );
         console.log("consentResp", consentResp);
-        if (consentResp) {
+        if(consentResp.statusCode != 101){
+            res.send({
+                status: false,
+                msg: consentResp.statusMessage
+            })
+            return
+        }
+        if (consentResp.statusCode == 101) {
             setTimeout(() => {
                 var options = {
                     method: "POST",
@@ -1715,7 +1727,7 @@ console.log('UANResponse employee_details',  UANResponse.result.employee_details
                                             },
                                             employeedetails: {
                                                 employername: userData.organization_name,
-                                                officepincode: +userData.aadhar_details.address.splitAddress.pincode,
+                                                officepincode: userData.office_pin_code,
                                                 salary: +userData.monthly_income,
                                                 officeaddress: UANResponse ? ( UANResponse.result.est_details[0]? (UANResponse.result.est_details[0].office?UANResponse.result.est_details[0].office: '') : '') : '',
                                                 dateofjoining:  UANResponse ? ( UANResponse.result.est_details[0]? (UANResponse.result.est_details[0].doj_epf?UANResponse.result.est_details[0].doj_epf: '') : '') : '',
@@ -1757,6 +1769,7 @@ console.log('UANResponse employee_details',  UANResponse.result.employee_details
         status: false,
         msg: error,
       });
+      return
    
     } else {
         let eSalaryResponse = null;
@@ -1972,7 +1985,7 @@ userMaster.uanOtpVerification = (req, res) => {
             console.log('body',body);
            // console.log('body',body.result.est_details);
             let UANResponse = body;
-            if(UANResponse['status-code'] == 101 || UANResponse['status-code'] == "101"){
+            if(UANResponse['status-code'] == 101 || UANResponse['status-code'] == "101" || UANResponse['status-code'] == 103){
                 return userService
                             .getUserById({_id: req.body.cust_ref_id})
                             .then(
