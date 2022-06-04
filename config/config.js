@@ -37,6 +37,10 @@ config.dev = {
 		VERIFICATION_API : 'https://testapi.karza.in/v3/pan-profile',
 		PAN_AADHAR_PROFILE_API : 'https://testapi.karza.in/v3/pan-aadhaar-profile',
 		PAN_AADHAR_LINK_STATUS : "https://testapi.karza.in/v3/pan-aadhaar-link"
+	},
+	epf: {
+		EPF_GET_OTP: 'https://testapi.karza.in/v2/epf-get-otp',
+		EPF_GET_PASSBOOK: 'https://testapi.karza.in/v2/epf-get-passbook',
 	}  	
 };
 

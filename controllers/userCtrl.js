@@ -429,7 +429,12 @@ userMaster.aadharVerification = function (req, res) {
         return
     }
     //return userService.findOne({_id:reqObj.id}).then(result => {
-    let currentTime = new Date().getTime().toString().substr(0, 10);
+    let currentTime = new Date().getTime().toString();
+    console.log('current time',currentTime);
+
+    let currentDate = new Date();
+    let timestamp = Math.floor( currentDate / 1000 );
+    console.log("timestamp", timestamp)
     let caseId = randomize("0", 6);
 
     var options = {
@@ -445,7 +450,7 @@ userMaster.aadharVerification = function (req, res) {
                 "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0",
             consent: "Y",
             name: reqObj.pan_name ? reqObj.pan_name : 'testUser',
-            consentTime: currentTime,
+            consentTime: timestamp.toString(),
             consentText: "Consent accepted",
             clientData: {caseId: caseId},
         },
@@ -463,7 +468,14 @@ userMaster.aadharVerification = function (req, res) {
             "+++++++++++++++++++++++++ aadhaar-consent Response obj ++++++++++++++++++++++++++++++"
         );
         console.log("consentResp", consentResp);
-        if (consentResp) {
+        if(consentResp.statusCode != 101){
+            res.send({
+                status: false,
+                msg: consentResp.statusMessage
+            })
+            return
+        }
+        if (consentResp.statusCode == 101) {
             setTimeout(() => {
                 var options = {
                     method: "POST",
@@ -1479,7 +1491,7 @@ userMaster.generateToken = (req, res) => {
     //   }
 
     //req.body.id = req.body.id ? req.body.id : "6220ede1014e060ee134b0e4";
-    req.body.cust_ref_id = req.body.cust_ref_id ? req.body.cust_ref_id : "6220ede1014e060ee134b0e4";
+    req.body.cust_ref_id = req.body.cust_ref_id ? req.body.cust_ref_id : "6251183ad0abce74b8c627da";
     let token;
     var options = {
         method: "POST",
@@ -1528,7 +1540,8 @@ userMaster.generateToken = (req, res) => {
                                     userData = result;
                                     userData['cust_ref_id'] = req.body.cust_ref_id;
                                     userData['bank_ref_id'] = req.body.bank_ref_id;
-                                    getUserProfileData(userData, token, res)
+                                   // getUserProfileData(userData, token, res);
+                                    generateUANOtp(userData, token, res);
                                  
                                 }, err => {
                                     res.send({
@@ -1676,9 +1689,19 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
 }
 
 
-function getUserProfileData(userData, token, res) {
+function getUserProfileData(userData, token, UANResponse, res) {
   //console.log('getUserProfileData', userData)
-  console.log('token', token);
+  console.log('token data', token);
+//   let firstDate = UANResponse.est_details[UANResponse.est_details.length - 1].doj_epf.split("-")[2];
+//   console.log('firstDate', firstDate);
+//   const d = new Date();
+//   let year = d.getFullYear();
+//   let yearOfExperience = year - firstDate;
+//   console.log('yearOfExperience', yearOfExperience);
+//console.log('getUserProfileData', userData)
+console.log('UAN est_details',  UANResponse.result.est_details[0]);
+console.log('UANResponse employee_details',  UANResponse.result.employee_details);
+
 
                           //dynamic Request from DB 
                           let dynamicRequestObj = {
@@ -1691,19 +1714,36 @@ function getUserProfileData(userData, token, res) {
                                             emailid: userData.email_id,
                                             profession: userData.professional_type,
                                             address1: userData.aadhar_details.address.combinedAddress,
+                                            address2: userData.aadhar_details.address.splitAddress.street,
+                                            city:  userData.aadhar_details.address.splitAddress.vtcName,
+                                            state: userData.aadhar_details.address.splitAddress.state,
                                             pincode: +userData.aadhar_details.address.splitAddress.pincode,
+                                            maritalstatus:  userData.marital_status,
+                                            addresstype: userData.address_type, //"Self-Owned",
+                                            fathername: UANResponse ? ( UANResponse.result? (UANResponse.result.employee_details ?  (UANResponse.result.employee_details.father_name ? UANResponse.result.employee_details.father_name: ''):''):''):'' ,
+                                            mothername: userData.mothers_maiden_name,
                                             finance: {
                                                 pan: userData.pan_no
                                             },
                                             employeedetails: {
-                                                officepincode: +userData.aadhar_details.address.splitAddress.pincode,
-                                                salary: +userData.monthly_income
-                                            }
+                                                employername: userData.organization_name,
+                                                officepincode: userData.office_pin_code,
+                                                salary: +userData.monthly_income,
+                                                officeaddress: UANResponse ? ( UANResponse.result.est_details[0]? (UANResponse.result.est_details[0].office?UANResponse.result.est_details[0].office: '') : '') : '',
+                                                dateofjoining:  UANResponse ? ( UANResponse.result.est_details[0]? (UANResponse.result.est_details[0].doj_epf?UANResponse.result.est_details[0].doj_epf: '') : '') : '',
+                                                designation: userData.designation,
+                                                //yoe: yearOfExperience ?  yearOfExperience : 7,
+                                                yoe: 10,
+                                            },
+                                            product: {
+                                                type: "3"
+                                                }
+                                                
                                         }
                                     }
 
                                   
-                                   // console.log('request obj', request)
+                                    console.log('dynamicRequestObj ', dynamicRequestObj)
 
                                    
   var options = {
@@ -1729,6 +1769,7 @@ function getUserProfileData(userData, token, res) {
         status: false,
         msg: error,
       });
+      return
    
     } else {
         let eSalaryResponse = null;
@@ -1855,5 +1896,128 @@ function getUserProfileData(userData, token, res) {
  
 }
 
+function generateUANOtp(userData, token, res){
+    var options = {
+        method: "POST",
+        url: "https://testapi.karza.in/v2/epf-get-otp",
+        headers: {
+            "Content-Type": `${config.karza.app_type}`,
+            "x-karza-key": `${config.karza.auth_key}`
+
+        },
+        body: {
+            "consent": "Y",
+            "uan": "", //100946405415
+            "mobile_no": userData.mobile_no //9952538003
+          },
+        json: true,
+    };
+
+    console.log('UAN otp request obj', options);
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log("Esalay Error", error);
+            res.send({
+                status: false,
+                msg: error,
+            });
+            return
+        } else {
+            console.log(
+                "+++++++++++++++++++++++++ epf-get-otp response obj ++++++++++++++++++++++++++++++"
+            );
+            console.log(body);
+            let response = body;
+            if(response['status-code'] == 101 || response['status-code'] == "101"){
+                response.token = token;
+                res.send({
+                    status: true,
+                    msg: "UAN otp response",
+                    data: response
+                });
+            }else {
+                res.send({
+                    status: false,
+                    msg: "UAN otp response",
+                    data: response
+                });
+            }
+           
+        }
+    })
+}
+
+userMaster.uanOtpVerification = (req, res) => {
+    let token = req.body.token ? req.body.token : '';
+    //req.body.request_id = '';
+    //req.body.otp = '';
+    //req.body.cust_ref_id = '';
+    console.log('Req body',req.body);
+
+    var options = {
+        method: "POST",
+        url: "https://testapi.karza.in/v2/epf-get-passbook",
+        headers: {
+            "Content-Type": `${config.karza.app_type}`,
+            "x-karza-key": `${config.karza.auth_key}`
+
+        },
+        body: {
+            "request_id":  req.body.request_id,
+            "otp": req.body.otp
+          },
+        json: true,
+    };
+
+    console.log('req options', options )
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log("Esalay Error", error);
+            res.send({
+                status: false,
+                msg: error,
+            });
+            return
+        } else {
+            console.log(
+                "+++++++++++++++++++++++++ epf-get-passbook response obj ++++++++++++++++++++++++++++++"
+            );
+            console.log('body',body);
+           // console.log('body',body.result.est_details);
+            let UANResponse = body;
+            if(UANResponse['status-code'] == 101 || UANResponse['status-code'] == "101" || UANResponse['status-code'] == 103){
+                return userService
+                            .getUserById({_id: req.body.cust_ref_id})
+                            .then(
+                                (result) => {
+                                    userData = result;
+                                    userData['cust_ref_id'] = req.body.cust_ref_id;
+                                    userData['bank_ref_id'] = req.body.bank_ref_id ? req.body.bank_ref_id : '' ;
+                                    getUserProfileData(userData, token, UANResponse, res);
+                                   // generateUANOtp(userData, token, res);
+                                 
+                                }, err => {
+                                    res.send({
+                                        status: false,
+                                        msg: "User details not found"
+                                    })
+                                }).catch(err => {
+                                res.send({
+                                    status: false,
+                                    msg: "Something Went Wrong"
+                                })
+                            });
+            }else {
+                res.send({
+                    status: false,
+                    msg: "UAN otp response",
+                    data: response
+                });
+            }
+        }
+    })
+
+
+}
 
 module.exports = userMaster;

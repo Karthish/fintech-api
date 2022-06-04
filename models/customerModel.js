@@ -65,7 +65,11 @@ var customerSchema = new Schema({
     loan_sanction_ref_id : { type: Schema.ObjectId, ref:"loanSanction"},
     loan_application_number: { type: Number },
     customer_ref_number:  { type: Number },
-    customer_ref_id:  { type: Number }
+    customer_ref_id:  { type: Number },
+    address_type: { type: String},
+    marital_status: { type: String},
+    father_name: { type: String},
+    designation: { type: String}
 
 });
 
