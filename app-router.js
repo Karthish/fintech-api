@@ -82,7 +82,9 @@ router.get('/user/dashboard/:id', user.getDashboard);
 router.post('/early/salary/token', user.generateToken);
 router.post('/early/salary/status', user.earlySalaryLoanStatus);
 
-router.post('/user/uan/otp/verification', user.uanOtpVerification)
+router.post('/user/uan/otp/verification', user.uanOtpVerification);
+
+router.post('/user/updatequery/test', user.updateLoansanctionTest);
 
 //Payslip Upload API
 var storage = multer.memoryStorage({

@@ -3,6 +3,8 @@ var common = require("../common/common.js");
 var jwt = require("jsonwebtoken");
 var random = require("randomstring");
 var randomize = require("randomatic");
+var moment = require('moment'); // require
+moment().format(); 
 var request = require("request");
 var config = require("../config/config")[process.env.NODE_ENV || "dev"];
 var pdf = require('html-pdf');
@@ -429,30 +431,46 @@ userMaster.aadharVerification = function (req, res) {
         return
     }
     //return userService.findOne({_id:reqObj.id}).then(result => {
-    let currentTime = new Date().getTime().toString();
-    console.log('current time',currentTime);
+    let currentTime = new Date().getTime().toString().substring(0, 10);
+   // let currentTime = new Date().getTime()/1000;
 
-    let currentDate = new Date();
+    console.log('current time',Math.floor(currentTime).toString());
+
+    let currentDate = new Date().getTime();
     let timestamp = Math.floor( currentDate / 1000 );
+
     console.log("timestamp", timestamp)
+
+    
+    //UTC Timestamp coversion
+    let d1 = new Date();
+    var d2 = new Date( d1.getUTCFullYear(), d1.getUTCMonth(), d1.getUTCDate(), d1.getUTCHours(), d1.getUTCMinutes(), d1.getUTCSeconds()).getTime().toString();
+    var utcTime = Math.floor(d2 / 1000);
+    console.log('utc Time', utcTime)
+
+    //Epoch seconds
+    var utcEpochSeconds = new Date().getTime() - parseInt((new Date().getTimezoneOffset() * 6000));
+    var timestr = utcEpochSeconds.toString().substr(0, 10);
+    
+    console.log('utcEpochSeconds', utcEpochSeconds)
+    console.log('timestr', timestr)
+
+    // var b = moment.utc();
+    // var stamp = b.valueOf();
+    // console.log('stamp', stamp)
+
     let caseId = randomize("0", 6);
 
     var options = {
         method: "POST",
-        url: `${config.aadhar.CONSENT_API}`,
+        url: 'https://testapi.karza.in/v3/aadhaar-xml/otp',
         headers: {
             "Content-Type": `${config.karza.app_type}`,
             "x-karza-key": `${config.karza.auth_key}`,
         },
         body: {
-            ipAddress: "12.12.12.12",
-            userAgent:
-                "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0",
             consent: "Y",
-            name: reqObj.pan_name ? reqObj.pan_name : 'testUser',
-            consentTime: timestamp.toString(),
-            consentText: "Consent accepted",
-            clientData: {caseId: caseId},
+            aadhaarNo: reqObj.aadhar_no
         },
         json: true,
     };
@@ -476,59 +494,65 @@ userMaster.aadharVerification = function (req, res) {
             return
         }
         if (consentResp.statusCode == 101) {
-            setTimeout(() => {
-                var options = {
-                    method: "POST",
-                    url: `${config.aadhar.OTP_VERIFY_API}`,
-                    headers: {
-                        "Content-Type": `${config.karza.app_type}`,
-                        "x-karza-key": `${config.karza.auth_key}`,
-                    },
-                    body: {
-                        consent: "Y",
-                        aadhaarNo: req.body.aadhar_no,
-                        accessKey: consentResp.result.accessKey,
-                        clientData: {caseId: caseId},
-                    },
-                    json: true,
-                };
+            // setTimeout(() => {
+            //     var options = {
+            //         method: "POST",
+            //         url: `${config.aadhar.OTP_VERIFY_API}`,
+            //         headers: {
+            //             "Content-Type": `${config.karza.app_type}`,
+            //             "x-karza-key": `${config.karza.auth_key}`,
+            //         },
+            //         body: {
+            //             consent: "Y",
+            //             aadhaarNo: req.body.aadhar_no,
+            //             accessKey: consentResp.result.accessKey,
+            //             clientData: {caseId: caseId},
+            //         },
+            //         json: true,
+            //     };
 
-                console.log(
-                    "+++++++++++++++++++++++++ aadhaar-OTP generation request obj ++++++++++++++++++++++++++++++"
-                );
-                console.log(options.body);
-                request(options, function (error, response, body) {
-                    if (error) {
-                        console.log("OTP Generation Error", error);
-                        res.send({
-                            status: false,
-                            msg: error,
-                        });
-                    } else {
-                        console.log(
-                            "+++++++++++++++++++++++++ aadhaar-OTP generation response obj ++++++++++++++++++++++++++++++"
-                        );
-                        console.log(body);
-                        let response = body;
-                        if (
-                            response["statusCode"] == "101" ||
-                            response["statusCode"] == 101
-                        ) {
-                            res.send({
-                                status: true,
-                                msg: "OTP generated successfully",
-                                data: response,
-                            });
-                        } else {
-                            res.send({
-                                status: false,
-                                msg: "Invalide request details",
-                                data: response,
-                            });
-                        }
-                    }
-                });
-            }, 3000);
+            //     console.log(
+            //         "+++++++++++++++++++++++++ aadhaar-OTP generation request obj ++++++++++++++++++++++++++++++"
+            //     );
+            //     console.log(options.body);
+            //     request(options, function (error, response, body) {
+            //         if (error) {
+            //             console.log("OTP Generation Error", error);
+            //             res.send({
+            //                 status: false,
+            //                 msg: error,
+            //             });
+            //         } else {
+            //             console.log(
+            //                 "+++++++++++++++++++++++++ aadhaar-OTP generation response obj ++++++++++++++++++++++++++++++"
+            //             );
+            //             console.log(body);
+            //             let response = body;
+            //             if (
+            //                 response["statusCode"] == "101" ||
+            //                 response["statusCode"] == 101
+            //             ) {
+            //                 res.send({
+            //                     status: true,
+            //                     msg: "OTP generated successfully",
+            //                     data: response,
+            //                 });
+            //             } else {
+            //                 res.send({
+            //                     status: false,
+            //                     msg: "Invalide request details",
+            //                     data: response,
+            //                 });
+            //             }
+            //         }
+            //     });
+            // }, 3000);
+
+            res.send({
+                status:true,
+                msg: "otp generated",
+                data: consentResp
+            })
         }
     });
     // },
@@ -549,7 +573,7 @@ userMaster.aadharOTPVerification = function (req, res) {
     console.log("aadharOTPVerification req obj:", req.body);
     var options = {
         method: "POST",
-        url: `${config.aadhar.GET_AADHAR_FILE_API}`,
+        url: 'https://testapi.karza.in/v3/aadhaar-xml/file',
         headers: {
             "Content-Type": `${config.karza.app_type}`,
             "x-karza-key": `${config.karza.auth_key}`,
@@ -557,11 +581,7 @@ userMaster.aadharOTPVerification = function (req, res) {
         body: {
             consent: `${config.karza.consent}`,
             otp: req.body.otp,
-            shareCode: shareCode,
-            accessKey: req.body.accessKey,
-            clientData: {
-                caseId: req.body.caseId,
-            },
+            requestId: req.body.requestId
         },
         json: true,
     };
@@ -580,7 +600,7 @@ userMaster.aadharOTPVerification = function (req, res) {
         if (aadharResponseObj.statusCode == 101) {
 
 
-            let currentTime = new Date().getTime().toString().substr(0, 10);
+            let currentTime = new Date().getTime().toString().substring(0, 10);
             let caseId = randomize("0", 6);
 
             var options = {
@@ -596,7 +616,7 @@ userMaster.aadharOTPVerification = function (req, res) {
                         "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0",
                     consent: "Y",
                     name: req.body.name ? req.body.name : 'testUser',
-                    consentTime: currentTime,
+                    consentTime: 1654355317,
                     consentText: "Consent accepted",
                     clientData: {caseId: caseId},
                 },
@@ -626,7 +646,8 @@ userMaster.aadharOTPVerification = function (req, res) {
                         body: {
                             consent: "Y",
                             aadhaarLastFour: req.body.aadhar_no.substring(req.body.aadhar_no.length - 4),
-                            pan: req.body.pan_no
+                            pan: req.body.pan_no,
+                            name:req.body.name
                         },
                         json: true,
                     };
@@ -1688,6 +1709,41 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
       });
 }
 
+userMaster.updateLoansanctionTest = (req, res) => {
+    let customerLoanReqObj = {
+        cust_ref_id: '629f48c5e494de1f60331530',
+        bank_ref_id: '6227408f45641b987885d8b4',
+        mobilenumber: '9952538003',
+        status: 'failure',
+        statuscode: 107,
+        customerid: 'null',
+        reason: 'Service is not available at given pincodes 613205,0',
+        product: '',
+        sanctionLimit: '',
+        responseDate: new Date(),
+        inPrincipleLimit: 0,
+        inPrincipleTenure: 0,
+        loan_application_number: '09997261'
+    }
+
+    return bankService.updateCustomerLoanDetails(customerLoanReqObj).then(resp => {
+        res.send({
+            status:true,
+            data: resp
+        })
+    }, err => {
+        console.log('err', err);
+        res.send({
+            status:false,
+            msg: eee
+        })
+    }).catch(e => {
+        res.send({
+            status:false,
+            msg: e
+        })
+    })
+}
 
 function getUserProfileData(userData, token, UANResponse, res) {
   //console.log('getUserProfileData', userData)
@@ -1781,24 +1837,36 @@ console.log('UANResponse employee_details',  UANResponse.result.employee_details
              eSalaryResponse = body;
 
             let customerLoanReqObj = {};
-            customerLoanReqObj['cust_ref_id'] = userData.cust_ref_id;
-            customerLoanReqObj['bank_ref_id'] = userData.bank_ref_id;
-            customerLoanReqObj['loan_details'] = eSalaryResponse;
+            customerLoanReqObj['cust_ref_id'] = userData.cust_ref_id.toString();
+            customerLoanReqObj['bank_ref_id'] = userData.bank_ref_id.toString();
+            //customerLoanReqObj['loan_details'] = eSalaryResponse;
+            customerLoanReqObj['mobilenumber'] = eSalaryResponse.mobilenumber ? eSalaryResponse.mobilenumber : '' ;
+            customerLoanReqObj['status'] = eSalaryResponse.status ? eSalaryResponse.status : '' ;
+            customerLoanReqObj['statuscode'] = eSalaryResponse.statuscode ? eSalaryResponse.statuscode : '' ;
+            customerLoanReqObj['customerid'] = eSalaryResponse.customerid ? eSalaryResponse.customerid : '' ;
+            customerLoanReqObj['reason'] = eSalaryResponse.reason ? eSalaryResponse.reason : '' ;
+            customerLoanReqObj['product'] = eSalaryResponse.product ? eSalaryResponse.product : '' ;
+            customerLoanReqObj['sanctionLimit'] = eSalaryResponse.sanctionLimit ? eSalaryResponse.sanctionLimit : '' ;
+            customerLoanReqObj['responseDate'] = eSalaryResponse.responseDate ? new Date(eSalaryResponse.responseDate) : '' ;
+            customerLoanReqObj['inPrincipleLimit'] = eSalaryResponse.inPrincipleLimit ? eSalaryResponse.inPrincipleLimit : '' ;
+            customerLoanReqObj['inPrincipleTenure'] = eSalaryResponse.inPrincipleTenure ? eSalaryResponse.inPrincipleTenure : '' ;
             customerLoanReqObj['loan_application_number'] = loanApplicationNumber;
             let loanSanctionResponse = null;
             return bankService.findCustomerLoanDetails(customerLoanReqObj).then(resp => {
                 //update customer loan details in loan sanction collection
+                console.log('findCustomerLoanDetails success')
                 return bankService.updateCustomerLoanDetails(customerLoanReqObj).then(resp => {
+                    console.log('updateCustomerLoanDetails success');
                     loanSanctionResponse = resp;
                     let customerTblUpdateObj = {};
-                    customerTblUpdateObj['id'] = userData._id;
+                    customerTblUpdateObj['id'] = userData._id.toString();
                     customerTblUpdateObj['target'] = "bankDetails";
                     customerTblUpdateObj['current_page'] = 'loan-offer-list';
                     customerTblUpdateObj['next_page'] = 'early-salary-dashboard';
-                    customerTblUpdateObj['customer_ref_id'] = eSalaryResponse.customerid;
-                    customerTblUpdateObj['loan_sanction_ref_id'] = resp._id;
+                    customerTblUpdateObj['customer_ref_id'] = userData.cust_ref_id.toString();
+                    customerTblUpdateObj['loan_sanction_ref_id'] = resp._id.toString();
                     customerTblUpdateObj['loan_application_number'] = loanApplicationNumber;
-                    customerTblUpdateObj['bank_ref_id'] = userData['bank_ref_id'];
+                    customerTblUpdateObj['bank_ref_id'] = userData['bank_ref_id'].toString();
 
                     //update customer collection start
                     return userService
@@ -1845,7 +1913,7 @@ console.log('UANResponse employee_details',  UANResponse.result.employee_details
                     customerTblUpdateObj['target'] = "bankDetails";
                     customerTblUpdateObj['current_page'] = 'loan-offer-list';
                     customerTblUpdateObj['next_page'] = 'loan-offer-details';
-                    customerTblUpdateObj['customer_ref_id'] = eSalaryResponse.customerid;
+                    customerTblUpdateObj['customer_ref_id'] =  userData.cust_ref_id;
                     customerTblUpdateObj['loan_sanction_ref_id'] = resp._id;
                     customerTblUpdateObj['loan_application_number'] = loanApplicationNumber;
                     customerTblUpdateObj['bank_ref_id'] = userData['bank_ref_id'];
@@ -1896,6 +1964,8 @@ console.log('UANResponse employee_details',  UANResponse.result.employee_details
  
 }
 
+
+
 function generateUANOtp(userData, token, res){
     var options = {
         method: "POST",
@@ -1908,7 +1978,7 @@ function generateUANOtp(userData, token, res){
         body: {
             "consent": "Y",
             "uan": "", //100946405415
-            "mobile_no": userData.mobile_no //9952538003
+            "mobile_no": "9952538003" //9952538003  userData.mobile_no
           },
         json: true,
     };
@@ -1985,7 +2055,15 @@ userMaster.uanOtpVerification = (req, res) => {
             console.log('body',body);
            // console.log('body',body.result.est_details);
             let UANResponse = body;
-            if(UANResponse['status-code'] == 101 || UANResponse['status-code'] == "101" || UANResponse['status-code'] == 103){
+            if(UANResponse['status'] == 503){
+                res.send({
+                    status: false,
+                    msg: UANResponse.error,
+                    data: {}
+                })
+                return
+            }
+            if(UANResponse['status-code'] != 503){
                 return userService
                             .getUserById({_id: req.body.cust_ref_id})
                             .then(

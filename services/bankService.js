@@ -98,10 +98,18 @@ bankService.createCustomerLoanDetails = req => {
 //Update customer loan sanction details
 bankService.updateCustomerLoanDetails = req => {
     console.log("req in service", req);
+    let query = {};
+   query = {$set: req};
+   console.log('updateCustomerLoanDetails query', query)
+
     return new Promise((resolve, reject) => {
         try{
-            loanSanctionModel.findByIdAndUpdate({req}, (err, loan) => {
+            
+            loanSanctionModel.findOneAndUpdate({cust_ref_id:req.cust_ref_id}, req, (err, loan) => {
+                console.log('err', err);
+                console.log('loan', loan);
                 if(err || !loan) {
+
                     return reject(err)
                 }else{
                     return resolve(loan)

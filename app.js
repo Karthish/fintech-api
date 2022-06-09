@@ -12,7 +12,12 @@ const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+var moment = require('moment'); // require
+moment().format(); 
 var timestamps = require("mongoose-timestamp");
+const dotenv = require('dotenv');
+dotenv.config();
+console.log('mongodburl', `${process.env.MONGODB_DEV_URL}`)
 mongoose.plugin(timestamps, {
   createdAt: "created_at",
   updatedAt: "updated_at",
