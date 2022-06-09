@@ -12,7 +12,7 @@ let s3 = new aws.S3();
 var common = {};
 function getConfig() {
 	  return configService.findAll({}).then(result => {
-							console.log('config data', result[0]);
+							//console.log('config data', result[0]);
 						 	let credentials = result[0];
 					 	//s3 upload code here
 						 	 s3 = new aws.S3({

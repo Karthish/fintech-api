@@ -9,8 +9,23 @@ var request = require("request");
 var config = require("../config/config")[process.env.NODE_ENV || "dev"];
 var pdf = require('html-pdf');
 var bankService = require('../services/bankService');
+var configService = require('../services/configService');
 var userMaster = {};
 console.log('dirname', __dirname + './');
+let credentials;
+function getConfig() {
+    return configService.findAll({}).then(result => {
+                         
+                           credentials = result[0];
+                           console.log('credentials', result[0]);
+                       
+                      })
+                  }
+
+  
+
+getConfig();
+
 userMaster.testFunction = function (req, res) {
     //res.send("working fine");
     var html = `<html>
@@ -174,8 +189,8 @@ userMaster.panVerification = function (req, res) {
             {
                 url: `${config.pan.VERIFICATION_API}`,
                 headers: {
-                    "Content-Type": `${config.karza.app_type}`,
-                    "x-karza-key": `${config.karza.auth_key}`,
+                    "Content-Type": `${credentials.app_type}`,
+                    "x-karza-key": `${credentials.auth_key}`,
                 },
                 body: data,
             },
@@ -306,8 +321,8 @@ userMaster.panVerification_v1 = (req, res) => {
                 method: "POST",
                 url: `${config.aadhar.CONSENT_API}`,
                 headers: {
-                    "Content-Type": `${config.karza.app_type}`,
-                    "x-karza-key": `${config.karza.auth_key}`,
+                    "Content-Type": `${credentials.app_type}`,
+                    "x-karza-key": `${credentials.auth_key}`,
                 },
                 body: {
                     ipAddress: "12.12.12.12",
@@ -339,11 +354,11 @@ userMaster.panVerification_v1 = (req, res) => {
                             method: "POST",
                             url: `${config.pan.PAN_AADHAR_PROFILE_API}`,
                             headers: {
-                                "Content-Type": `${config.karza.app_type}`,
-                                "x-karza-key": `${config.karza.auth_key}`,
+                                "Content-Type": `${credentials.app_type}`,
+                                "x-karza-key": `${credentials.auth_key}`,
                             },
                             body: {
-                                consent: "Y",
+                                consent: `${credentials.consent}`,
                                 aadhaar: userObj.aadhar_no,
                                 pan: req.body.pan_no,
                                 monthYearOfBirth: monthYearOfBirth,
@@ -465,8 +480,8 @@ userMaster.aadharVerification = function (req, res) {
         method: "POST",
         url: 'https://testapi.karza.in/v3/aadhaar-xml/otp',
         headers: {
-            "Content-Type": `${config.karza.app_type}`,
-            "x-karza-key": `${config.karza.auth_key}`,
+            "Content-Type": `${credentials.app_type}`,
+            "x-karza-key": `${credentials.auth_key}`,
         },
         body: {
             consent: "Y",
@@ -575,8 +590,8 @@ userMaster.aadharOTPVerification = function (req, res) {
         method: "POST",
         url: 'https://testapi.karza.in/v3/aadhaar-xml/file',
         headers: {
-            "Content-Type": `${config.karza.app_type}`,
-            "x-karza-key": `${config.karza.auth_key}`,
+            "Content-Type": `${credentials.app_type}`,
+            "x-karza-key": `${credentials.auth_key}`,
         },
         body: {
             consent: `${config.karza.consent}`,
@@ -607,8 +622,8 @@ userMaster.aadharOTPVerification = function (req, res) {
                 method: "POST",
                 url: `${config.aadhar.CONSENT_API}`,
                 headers: {
-                    "Content-Type": `${config.karza.app_type}`,
-                    "x-karza-key": `${config.karza.auth_key}`,
+                    "Content-Type": `${credentials.app_type}`,
+                    "x-karza-key": `${credentials.auth_key}`,
                 },
                 body: {
                     ipAddress: "12.12.12.12",
@@ -640,8 +655,8 @@ userMaster.aadharOTPVerification = function (req, res) {
                        // url: `${config.pan.PAN_AADHAR_LINK_STATUS}`,
                         url: `${config.pan.VERIFICATION_API}`,
                         headers: {
-                            "Content-Type": `${config.karza.app_type}`,
-                            "x-karza-key": `${config.karza.auth_key}`,
+                            "Content-Type": `${credentials.app_type}`,
+                            "x-karza-key": `${credentials.auth_key}`,
                         },
                         body: {
                             consent: "Y",
@@ -1710,6 +1725,7 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
 }
 
 userMaster.updateLoansanctionTest = (req, res) => {
+    console.log('credentials', `${credentials.auth_key}`)
     let customerLoanReqObj = {
         cust_ref_id: '629f48c5e494de1f60331530',
         bank_ref_id: '6227408f45641b987885d8b4',
@@ -1971,8 +1987,8 @@ function generateUANOtp(userData, token, res){
         method: "POST",
         url: "https://testapi.karza.in/v2/epf-get-otp",
         headers: {
-            "Content-Type": `${config.karza.app_type}`,
-            "x-karza-key": `${config.karza.auth_key}`
+            "Content-Type": `${credentials.app_type}`,
+            "x-karza-key": `${credentials.auth_key}`
 
         },
         body: {
@@ -2028,8 +2044,8 @@ userMaster.uanOtpVerification = (req, res) => {
         method: "POST",
         url: "https://testapi.karza.in/v2/epf-get-passbook",
         headers: {
-            "Content-Type": `${config.karza.app_type}`,
-            "x-karza-key": `${config.karza.auth_key}`
+            "Content-Type": `${credentials.app_type}`,
+            "x-karza-key": `${credentials.auth_key}`
 
         },
         body: {
