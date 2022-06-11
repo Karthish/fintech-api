@@ -1822,7 +1822,7 @@ console.log('UANResponse employee_details',  UANResponse.result.employee_details
     method: "POST",
     url: "https://api.socialworth.in/betaProfileIngestion/profile-ingestion",
     headers: {
-              "Content-Type": `${config.karza.app_type}`,
+              "Content-Type": `${credentials.app_type}`,
               "token": `${token}`
             },
 
@@ -1875,11 +1875,11 @@ console.log('UANResponse employee_details',  UANResponse.result.employee_details
                     console.log('updateCustomerLoanDetails success');
                     loanSanctionResponse = resp;
                     let customerTblUpdateObj = {};
-                    customerTblUpdateObj['id'] = userData._id.toString();
+                    customerTblUpdateObj['id'] = resp.cust_ref_id.toString();
                     customerTblUpdateObj['target'] = "bankDetails";
                     customerTblUpdateObj['current_page'] = 'loan-offer-list';
                     customerTblUpdateObj['next_page'] = 'early-salary-dashboard';
-                    customerTblUpdateObj['customer_ref_id'] = userData.cust_ref_id.toString();
+                    customerTblUpdateObj['customer_ref_id'] = resp.cust_ref_id.toString();
                     customerTblUpdateObj['loan_sanction_ref_id'] = resp._id.toString();
                     customerTblUpdateObj['loan_application_number'] = loanApplicationNumber;
                     customerTblUpdateObj['bank_ref_id'] = userData['bank_ref_id'].toString();
@@ -1889,6 +1889,7 @@ console.log('UANResponse employee_details',  UANResponse.result.employee_details
                     .findByIdAndUpdate(customerTblUpdateObj)
                     .then(
                         (result) => {
+                            console.log('update customer collection success')
                             res.send({
                                 status: true,
                                 msg: "Loan sanction details updated successfully",
@@ -1923,19 +1924,22 @@ console.log('UANResponse employee_details',  UANResponse.result.employee_details
                 // error part on find customer loan details not exits
 
                 //save customer loan details start
+                console.log('else part save customer collection request', customerLoanReqObj)
                 return bankService.createCustomerLoanDetails(customerLoanReqObj).then(resp => {
+                    console.log('save customer collection scucess', resp)
                     let customerTblUpdateObj = {};
-                    customerTblUpdateObj['id'] = userData._id;
+                    customerTblUpdateObj['id'] = userData.cust_ref_id.toString();
                     customerTblUpdateObj['target'] = "bankDetails";
                     customerTblUpdateObj['current_page'] = 'loan-offer-list';
                     customerTblUpdateObj['next_page'] = 'loan-offer-details';
-                    customerTblUpdateObj['customer_ref_id'] =  userData.cust_ref_id;
-                    customerTblUpdateObj['loan_sanction_ref_id'] = resp._id;
+                    customerTblUpdateObj['customer_ref_id'] =  userData.cust_ref_id.toString();
+                    customerTblUpdateObj['loan_sanction_ref_id'] = resp._id.toString();
                     customerTblUpdateObj['loan_application_number'] = loanApplicationNumber;
-                    customerTblUpdateObj['bank_ref_id'] = userData['bank_ref_id'];
+                    customerTblUpdateObj['bank_ref_id'] = userData['bank_ref_id'].toString();
 
                     //customer collection update start
                     return userService.findByIdAndUpdate(customerTblUpdateObj).then(result => {
+                        console.log('else part update customer collection request', result)
                         res.send({
                             status: true,
                             msg: "Loan sanction details updated successfully",
