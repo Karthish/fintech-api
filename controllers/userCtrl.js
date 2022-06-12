@@ -1931,7 +1931,7 @@ console.log('UANResponse employee_details',  UANResponse.result.employee_details
                     customerTblUpdateObj['id'] = userData.cust_ref_id.toString();
                     customerTblUpdateObj['target'] = "bankDetails";
                     customerTblUpdateObj['current_page'] = 'loan-offer-list';
-                    customerTblUpdateObj['next_page'] = 'loan-offer-details';
+                    customerTblUpdateObj['next_page'] = 'early-salary-dashboard';
                     customerTblUpdateObj['customer_ref_id'] =  userData.cust_ref_id.toString();
                     customerTblUpdateObj['loan_sanction_ref_id'] = resp._id.toString();
                     customerTblUpdateObj['loan_application_number'] = loanApplicationNumber;
