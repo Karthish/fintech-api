@@ -1611,106 +1611,108 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
               userData = result;
               console.log('userdata in loan sanction', userData);
               //let token = generateUserToken();
-              if(!userData.loan_details.customerid ) {
+              if(userData.customerid == 'null') {
                   res.send({
                       status: false,
-                      msg: userData.loan_details.reason,
+                      msg: userData.reason,
                       data: userData
                   })
                   return
-              }
-              let token;
-              var options = {
-                  method: "POST",
-                  url: "https://api.earlysalary.com/uat/esapi/generateToken",
-                  headers: {
-                      "Content-Type": `${credentials.app_type}`
-            
-                  },
-                  body: {
-                      username: "AryaaoneUser",
-                      password: "Ary@@One#fd$23@df#32",
-                      applicationName: "WEB"
-                  },
-                  json: true,
-              };
-            
-              console.log(
-                  "+++++++++++++++++++++++++ Esalary Token request obj ++++++++++++++++++++++++++++++"
-              );
-              console.log(options.body);
-              request(options, function (error, response, body) {
-                if (error) {
-                    console.log("Esalay Error", error);
-                    res.send({
-                        status: false,
-                        msg: error,
-                    });
-                    return
-                } else {
-                    console.log(
-                        "+++++++++++++++++++++++++ Esalay Token response obj ++++++++++++++++++++++++++++++"
-                    );
-                    console.log(body);
-                    let response = body;
-                    if (
-                        response["statusCode"] == "200" ||
-                        response["statusCode"] == 200
-                    ) {
-                        token = response["token"];
-                        if(token){
-                          let statusAPIUrl = 'https://api.socialworth.in/peopleStrong/fetchcuststatus';
-                          let customerId = (userData ? (userData.loan_details ? (userData.loan_details.customerid ? userData.loan_details.customerid : '') : ''): '');
-                          let custRefNoword =  randomize("0", 25);
-                          
-                          var options = {
-                            method: "POST",
-                            url: statusAPIUrl,
-                            headers: {
-                                      "Content-Type": `${credentials.app_type}`,
-                                      "token": token
-                                    },
-                            body: {
-                                customerId: customerId,
-                                custRefNoword: custRefNoword
-                            },
-                            json: true,
-                         };
-          
-                         console.log(
-                          "+++++++++++++++++++++++++ Esalary Status request obj ++++++++++++++++++++++++++++++"
-                      );
-                      console.log(options.body);
-                      request(options, function (error, response, body) {
-                          if (error) {
-                              console.log("Esalay Error", error);
-                              res.send({
-                                  status: false,
-                                  msg: error,
-                              });
-                              return
-                          } else {
-                              console.log(
-                                  "+++++++++++++++++++++++++ Esalay Statud response obj ++++++++++++++++++++++++++++++"
-                              );
-                              console.log(body);
-                              let response = body;
-                              response['customer_details'] = userData;
-                                  res.send({
-                                    status: true,
-                                    msg: "User Loan Application Details",
-                                    data: response
-                                  })
-                              
-                          }
-                      })
-          
-                      }
-                    }
-                }
-            })
+              } 
 
-           
+              else {
+                let token;
+                var options = {
+                    method: "POST",
+                    url: "https://api.earlysalary.com/uat/esapi/generateToken",
+                    headers: {
+                        "Content-Type": `${credentials.app_type}`
+              
+                    },
+                    body: {
+                        username: "AryaaoneUser",
+                        password: "Ary@@One#fd$23@df#32",
+                        applicationName: "WEB"
+                    },
+                    json: true,
+                };
+              
+                console.log(
+                    "+++++++++++++++++++++++++ Esalary Token request obj ++++++++++++++++++++++++++++++"
+                );
+                console.log(options.body);
+                request(options, function (error, response, body) {
+                  if (error) {
+                      console.log("Esalay Error", error);
+                      res.send({
+                          status: false,
+                          msg: error,
+                      });
+                      return
+                  } else {
+                      console.log(
+                          "+++++++++++++++++++++++++ Esalay Token response obj ++++++++++++++++++++++++++++++"
+                      );
+                      console.log(body);
+                      let response = body;
+                      if (
+                          response["statusCode"] == "200" ||
+                          response["statusCode"] == 200
+                      ) {
+                          token = response["token"];
+                          if(token){
+                            let statusAPIUrl = 'https://api.socialworth.in/peopleStrong/fetchcuststatus';
+                            let customerId = (userData ? (userData.customerid ? userData.customerid : '') : '');
+                            let custRefNoword =  randomize("0", 25);
+                            
+                            var options = {
+                              method: "POST",
+                              url: statusAPIUrl,
+                              headers: {
+                                        "Content-Type": `${credentials.app_type}`,
+                                        "token": token
+                                      },
+                              body: {
+                                  customerId: customerId,
+                                  custRefNoword: custRefNoword
+                              },
+                              json: true,
+                           };
+            
+                           console.log(
+                            "+++++++++++++++++++++++++ Esalary Status request obj ++++++++++++++++++++++++++++++"
+                        );
+                        console.log(options.body);
+                        request(options, function (error, response, body) {
+                            if (error) {
+                                console.log("Esalay Error", error);
+                                res.send({
+                                    status: false,
+                                    msg: error,
+                                });
+                                return
+                            } else {
+                                console.log(
+                                    "+++++++++++++++++++++++++ Esalay Statud response obj ++++++++++++++++++++++++++++++"
+                                );
+                                console.log(body);
+                                let response = body;
+                                response['customer_details'] = userData;
+                                    res.send({
+                                      status: true,
+                                      msg: "User Loan Application Details",
+                                      data: response
+                                    })
+                                
+                            }
+                        })
+            
+                        }
+                      }
+                  }
+              })
+              }
+         
           }, err => {
               res.send({
                   status: false,
