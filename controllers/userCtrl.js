@@ -1533,7 +1533,7 @@ userMaster.generateToken = (req, res) => {
         method: "POST",
         url: "https://api.earlysalary.com/uat/esapi/generateToken",
         headers: {
-            "Content-Type": `${config.karza.app_type}`
+            "Content-Type": `${credentials.app_type}`
 
         },
         body: {
@@ -1624,7 +1624,7 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
                   method: "POST",
                   url: "https://api.earlysalary.com/uat/esapi/generateToken",
                   headers: {
-                      "Content-Type": `${config.karza.app_type}`
+                      "Content-Type": `${credentials.app_type}`
             
                   },
                   body: {
@@ -1667,7 +1667,7 @@ userMaster.earlySalaryLoanStatus = (req, res) => {
                             method: "POST",
                             url: statusAPIUrl,
                             headers: {
-                                      "Content-Type": `${config.karza.app_type}`,
+                                      "Content-Type": `${credentials.app_type}`,
                                       "token": token
                                     },
                             body: {
@@ -1998,7 +1998,7 @@ function generateUANOtp(userData, token, res){
         body: {
             "consent": "Y",
             "uan": "", //100946405415
-            "mobile_no": "9952538003" //9952538003  userData.mobile_no
+            "mobile_no": userData.mobile_no //9952538003  userData.mobile_no
           },
         json: true,
     };
